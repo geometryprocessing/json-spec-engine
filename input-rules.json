@@ -1,0 +1,51 @@
+[
+    {
+        "name": "defaults",
+        "type": "file",
+        "format": ["json"],
+        "doc" : "path to another JSON file containing the default parameters (this file will be patched on top of the defaults)"
+    },
+    {
+        "name": "root_path",
+        "type": "path",
+        "required": true,
+        "doc": "path to root director in the simulation (by default this is the directory containing this JSON file, so other paths can  be relative to the JSON's path)"
+    },
+    {
+        "name": "geometry/type",
+        "type": "multiplechoice",
+        "choices": ["mesh", "plane"],
+        "doc": "What type of geometry is this? (for now only mesh is implemented)"
+    },
+    {
+        "name": "geometry/mesh",
+        "type": "file",
+        "required": true,
+        "fileformat": ["obj","msh"],
+        "doc": "Path to mesh file"
+    },
+    {
+        "name": "geometry/surface_selection",
+        "type": "dict",
+        "fields": ["id","axis","position","tolerance"],
+        "doc": "Describes a surface selection"
+        
+    }
+    {
+        "name": "geometry/surface_selection",
+        "type": "integer",
+        "min": 0,
+        "doc": "Describes a surface selection"
+        
+    }
+    {
+        "name": "geometry/surface_selection",
+        "type": "file",
+        "format": ["txt"],
+        "doc": "Describes a surface selection"
+        
+    }
+]
+    
+* accepts both lists or single elements transparently
+* if multiple rules apply to the same name, just one needs to pass

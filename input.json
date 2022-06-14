@@ -1,0 +1,63 @@
+{
+    // 
+    "defaults": "path/to/defaults.json", 
+    // 
+    "root_path": "path/to/root/", 
+    
+    // List of meshes and analytical geometries to use in the simulation
+    "geometry": [{
+        
+        "type": "mesh|plane",
+        
+        // 
+        "mesh": "path/to/mesh.ext",
+        
+        // Obstacles are geometries that are fully scripted
+        "is_obstacle": false,
+        
+        // Easy way to disable the geometry
+        "enabled": true,
+
+        // Simple transformation applied to the mesh upon loading
+        "transformation": {
+            "translation": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "rotation_mode": "xyz",
+            "scale": [1.0, 1.0, 1.0], 
+            "dimensions": [1.0, 1.0, 1.0] // absolute size of the mesh's bounding box
+        },
+
+        // What geometry to use?
+        "extract": "volume|surface|edges|points",
+
+        // Select/tag certain points (We dont use it currently.)
+        "point_selection": [],
+
+        // The following are different ways to specify surface_selection
+        "surface_selection": [{
+            // DP: add a surface group to avoid surface_ and a volume group to avoid volume_?
+            "id": 1,                
+            "axis": 1,
+            "position": 0.1025,
+            "tolerance": 0,
+        }],
+        "surface_selection": "path/to/file.txt",
+        "surface_selection": 1,
+        // "surface_offset": 3, // TODO
+
+        // The following are different ways to specify volume_selection
+        "volume_selection": [], // selection operators
+        "volume_selection": "path/to/file.txt",
+        "volume_selection": 1,
+
+        // Number of edge refinements
+        "n_refs": 0, // TODO
+
+        "advanced": {
+            "force_linear_geometry": false, // TODO
+            "refinement_location": 0.5, // TODO
+            "normalize_mesh": false, // TODO
+            "min_component": -1 // TODO
+        }
+    }]
+}
