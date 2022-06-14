@@ -12,9 +12,22 @@
         "doc": "path to root director in the simulation (by default this is the directory containing this JSON file, so other paths can  be relative to the JSON's path)"
     },
     {
+        "name": "geometry",
+        "type": "[dict]",
+        "required": true,
+        "doc": "This is the geometry"
+    },
+    {
+        "name": "geometry",
+        "type": "dict",
+        "required": true,
+        "doc": "This is the geometry"
+    },
+    {
         "name": "geometry/type",
         "type": "multiplechoice",
         "choices": ["mesh", "plane"],
+        "default": "mesh",
         "doc": "What type of geometry is this? (for now only mesh is implemented)"
     },
     {
@@ -27,25 +40,28 @@
     {
         "name": "geometry/surface_selection",
         "type": "dict",
-        "fields": ["id","axis","position","tolerance"],
-        "doc": "Describes a surface selection"
-        
-    }
+        "required_fields": ["id","axis","position"],
+        "doc": "Describes a surface selection"        
+    },
     {
         "name": "geometry/surface_selection",
         "type": "integer",
         "min": 0,
-        "doc": "Describes a surface selection"
         
-    }
+    },
     {
         "name": "geometry/surface_selection",
         "type": "file",
         "format": ["txt"],
-        "doc": "Describes a surface selection"
-        
+    },
+    {
+        "name": "geometry/volume_selection",
+        "like": "geometry/surface_selection",
+        "doc": "The following are different ways to specify volume_selection"
     }
 ]
     
 * accepts both lists or single elements transparently
 * if multiple rules apply to the same name, just one needs to pass
+* any type becomes a list with "[]"
+* warnings if some fields do not have rules

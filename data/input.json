@@ -38,14 +38,13 @@
             // DP: add a surface group to avoid surface_ and a volume group to avoid volume_?
             "id": 1,                
             "axis": 1,
-            "position": 0.1025,
-            "tolerance": 0,
+            "position": 0.1025
         }],
         "surface_selection": "path/to/file.txt",
         "surface_selection": 1,
         // "surface_offset": 3, // TODO
 
-        // The following are different ways to specify volume_selection
+        // 
         "volume_selection": [], // selection operators
         "volume_selection": "path/to/file.txt",
         "volume_selection": 1,

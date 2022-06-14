@@ -1,0 +1,17 @@
+//////////////////////////////////////////////////////////////////////////
+#include <sjv/sjv.h>
+#include <catch2/catch.hpp>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <ctime>
+//////////////////////////////////////////////////////////////////////////
+
+using namespace sjv;
+
+
+TEST_CASE("eigen_params", "[solver]")
+{
+    REQUIRE(true);
+
+}
