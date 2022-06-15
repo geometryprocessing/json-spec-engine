@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <sjv/sjv.h>
 #include <iostream>
+#include <filesystem> // C++17
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace sjv
@@ -50,7 +51,15 @@ namespace sjv
                 if (verify_rule(input, i))
                     count++;
 
-            if (count != 1)
+            if (count == 0)
+            {
+                std::cout << "ERROR: No valid rules in this list:" << std::endl;
+                for (auto i : matching_rules)
+                    std::cout << i << std::endl;
+                return false;
+            }
+
+            if (count > 1)
             {
                 std::cout << "ERROR: Multiple valid rules in this list, only one should be valid:" << std::endl;
                 for (auto i : matching_rules)
@@ -80,6 +89,10 @@ namespace sjv
             return true;
         else if (type == "float")
             return verify_rule_float(input, rule);
+        else if (type == "int")
+            return verify_rule_float(input, rule);
+        else if (type == "file")
+            return verify_rule_file(input, rule);
         else
         {
             std::cout << "ERROR: Unknown type " << std::endl;
@@ -89,7 +102,26 @@ namespace sjv
     };
     bool sjv::verify_rule_file(const json &input, const json &rule)
     {
-        return false;
+        assert(rule.at("type") == "file");
+
+        std::string p_str = cwd + "/" + string(input);
+        std::filesystem::path p = std::filesystem::path(p_str);
+
+        if (!std::filesystem::is_regular_file(p))
+            return false;
+
+        if (rule.contains("extensions"))
+        {
+            std::string ext = p.extension();
+            int count = 0;
+            for (auto e : rule["extensions"])
+                if (e == ext)
+                    count++;
+            if (count != 1)
+                return false;
+        }
+
+        return true;
     };
     bool sjv::verify_rule_float(const json &input, const json &rule)
     {
@@ -101,11 +133,25 @@ namespace sjv
         if (rule.contains("min") && input < rule["min"])
             return false;
 
+        if (rule.contains("max") && input > rule["max"])
+            return false;
+
         return true;
     };
     bool sjv::verify_rule_int(const json &input, const json &rule)
     {
-        return false;
+        assert(rule.at("type") == "int");
+
+        if (!input.is_number_integer())
+            return false;
+
+        if (rule.contains("min") && input < rule["min"])
+            return false;
+
+        if (rule.contains("max") && input > rule["max"])
+            return false;
+
+        return true;
     };
     bool sjv::verify_rule_path(const json &input, const json &rule)
     {

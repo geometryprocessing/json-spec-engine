@@ -123,8 +123,8 @@ target_link_libraries(sjv PUBLIC nlohmann::json)
 # Compiler options
 ################################################################################
 
-# Use C++14
-target_compile_features(sjv PUBLIC cxx_std_14)
+# Use C++17
+target_compile_features(sjv PUBLIC cxx_std_17)
 
 ################################################################################
 # Tests
