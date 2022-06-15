@@ -1,5 +1,9 @@
 # Tags supported for each type
 
+## all
+
+list
+
 ## float,int: 
 
 * min: number

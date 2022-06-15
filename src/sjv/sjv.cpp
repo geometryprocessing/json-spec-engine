@@ -2,18 +2,20 @@
 #include <sjv/sjv.h>
 #include <iostream>
 #include <filesystem> // C++17
+#include <sstream>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace sjv
 {
     bool sjv::verify_json(const json &input, const json &rules)
     {
+        log.clear();
         return verify_json("/", input, rules);
     }
 
     bool sjv::verify_json(const string &pointer, const json &input, const json &rules)
     {
-        // Polymorphism on list, for us a single item or a list are indistinguishable
+        // Polymorphism on list, a single item or a list are indistinguishable
         // All the elements in the list must pass the test
         if (input.is_array())
         {
@@ -35,8 +37,7 @@ namespace sjv
         // There must be at least one, otherwise warning and return true if not strict
         if (matching_rules.empty())
         {
-            std::cout << "WARNING: "
-                      << "Unknown entry " << pointer << std::endl;
+            log.push_back(log_item("warning","Unknown entry " + pointer));
 
             if (strict)
                 return false;
@@ -51,22 +52,25 @@ namespace sjv
 
         if (count == 0 && !matching_rules.empty())
         {
-            std::cout << "ERROR: No valid rules in this list:" << std::endl;
+            std::stringstream s;
+            s << "No valid rules in this list:";
             for (auto i : matching_rules)
-                std::cout << i << std::endl;
+                s << i << std::endl;
+            log.push_back(log_item("error",s.str()));
             return false;
         }
 
         if (count > 1)
         {
-            std::cout << "ERROR: Multiple valid rules in this list, only one should be valid:" << std::endl;
+            std::stringstream s;
+            s << "Multiple valid rules in this list, only one should be valid:";
             for (auto i : matching_rules)
-                std::cout << i << std::endl;
+                s << i << std::endl;
+            log.push_back(log_item("error",s.str()));
             return false;
         }
 
         // If it passes and if it is a dictionary, then test all childrens
-        // TODO: if any of these fails we need to report it somehow
         if (input.is_structured())
             for (auto &i : input.items())
                 if (!verify_json(pointer + i.key() + "/", i.value(), rules))
@@ -94,8 +98,7 @@ namespace sjv
             return verify_rule_object(input, rule);
         else
         {
-            std::cout << "ERROR: Unknown type " << std::endl;
-            exit(-1);
+            log.push_back(log_item("error","Unknown rule type " + type));
             return false;
         }
     };

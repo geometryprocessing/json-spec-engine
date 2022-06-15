@@ -32,6 +32,10 @@ namespace sjv
 
         // if strict == false, a json is valid even if it has entries not validated by a rule
         bool strict = false;
+
+        // message list
+        typedef std::pair<std::string,std::string> log_item;
+        std::vector<log_item> log;
     };
 
 } // namespace sjv
