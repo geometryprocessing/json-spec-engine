@@ -21,14 +21,17 @@ namespace sjv
 
         // Type-specific rule handlers
         bool verify_rule_file(const json &input, const json &rule);
-        bool verify_rule_double(const json &input, const json &rule);
+        bool verify_rule_float(const json &input, const json &rule);
         bool verify_rule_int(const json &input, const json &rule);
         bool verify_rule_path(const json &input, const json &rule);
         bool verify_rule_string(const json &input, const json &rule);
         bool verify_rule_dict(const json &input, const json &rule);
 
         // Working directory
-        string cwd;
+        string cwd = "";
+
+        // if strict == false, a json is valid even if it has entries not validated by a rule
+        bool strict = false;
     };
 
 } // namespace sjv
