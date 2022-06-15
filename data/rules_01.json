@@ -1,0 +1,69 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": ["geometry"],
+        "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/geometry/",
+        "type": "object",
+        "required": ["mesh"],
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions and materials."
+    },
+    {
+        "pointer": "/geometry/mesh/",
+        "type": "file",
+        "extensions": [".obj",".msh"],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/transformation/",
+        "type": "object",
+        "doc": "Geometric transformations applied to the geometry after loading it."
+    },
+    {
+        "pointer": "/geometry/transformation/translation/",
+        "type": "float",
+        "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/transformation/rotation/",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/transformation/scale/",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/volume_selection/",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/volume_selection/",
+        "type": "file",
+        "extensions": [".txt"]
+    },
+    {
+        "pointer": "/geometry/surface_selection/",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/surface_selection/",
+        "type": "file",
+        "extensions": [".txt"]
+    },
+    {
+        "pointer": "/geometry/n_refs/",
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/advanced/",
+        "type": "object"
+    },
+    {
+        "pointer": "/geometry/advanced/normalize_mesh/",
+        "type": "bool"
+    }
+
+]

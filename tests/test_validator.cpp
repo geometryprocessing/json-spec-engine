@@ -191,23 +191,13 @@ TEST_CASE("type_object", "[validator]")
 
 }
 
-TEST_CASE("file1", "[validator]")
+TEST_CASE("file_01", "[validator]")
 {
-    json input = R"( 
-        {
-            "string1": "teststring"
-        }
-        )"_json;
+    std::ifstream ifs1("../data/input_01.json");
+    json input = json::parse(ifs1);
 
-    json rules = R"( 
-        [
-        {
-            "pointer": "/",
-            "type": "object",
-            "required": ["string1"]
-        }
-        ]
-        )"_json;
+    std::ifstream ifs2("../data/rules_01.json");
+    json rules = json::parse(ifs2);
 
     sjv::sjv sjv;
 
@@ -215,6 +205,6 @@ TEST_CASE("file1", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    INFO(s);
+    WARN(s);
     REQUIRE(r);
 }

@@ -37,7 +37,7 @@ namespace sjv
         // There must be at least one, otherwise warning and return true if not strict
         if (matching_rules.empty())
         {
-            log.push_back(log_item("warning","Unknown entry " + pointer));
+            log.push_back(log_item("warning", "Unknown entry " + pointer));
 
             if (strict)
                 return false;
@@ -56,7 +56,7 @@ namespace sjv
             s << "No valid rules in this list:";
             for (auto i : matching_rules)
                 s << i << std::endl;
-            log.push_back(log_item("error",s.str()));
+            log.push_back(log_item("error", s.str()));
             return false;
         }
 
@@ -66,7 +66,7 @@ namespace sjv
             s << "Multiple valid rules in this list, only one should be valid:";
             for (auto i : matching_rules)
                 s << i << std::endl;
-            log.push_back(log_item("error",s.str()));
+            log.push_back(log_item("error", s.str()));
             return false;
         }
 
@@ -87,7 +87,7 @@ namespace sjv
         else if (type == "float")
             return verify_rule_float(input, rule);
         else if (type == "int")
-            return verify_rule_float(input, rule);
+            return verify_rule_int(input, rule);
         else if (type == "file")
             return verify_rule_file(input, rule);
         else if (type == "folder")
@@ -96,9 +96,11 @@ namespace sjv
             return verify_rule_string(input, rule);
         else if (type == "object")
             return verify_rule_object(input, rule);
+        else if (type == "bool")
+            return verify_rule_bool(input, rule);
         else
         {
-            log.push_back(log_item("error","Unknown rule type " + type));
+            log.push_back(log_item("error", "Unknown rule type " + type));
             return false;
         }
     };
@@ -106,12 +108,19 @@ namespace sjv
     {
         assert(rule.at("type") == "file");
 
+        if (!input.is_string())
+            return false;
+
         std::string p_str = cwd + "/" + string(input);
         std::filesystem::path p = std::filesystem::path(p_str);
 
         if (!std::filesystem::is_regular_file(p))
-            return false;
-
+        {
+            log.push_back(log_item("warning", "File not found: " + p_str));
+            if (strict)
+                return false;
+        }
+                
         if (rule.contains("extensions"))
         {
             std::string ext = p.extension();
@@ -133,15 +142,19 @@ namespace sjv
         std::filesystem::path p = std::filesystem::path(p_str);
 
         if (!std::filesystem::is_directory(p))
-            return false;
-
+        {
+            log.push_back(log_item("warning", "Folder not found: " + p_str));
+            if (strict)
+                return false;
+        }
+                
         return true;
     };
     bool sjv::verify_rule_float(const json &input, const json &rule)
     {
         assert(rule.at("type") == "float");
 
-        if (!input.is_number_float())
+        if (!input.is_number())
             return false;
 
         if (rule.contains("min") && input < rule["min"])
@@ -200,16 +213,24 @@ namespace sjv
 
         return true;
     };
+    bool sjv::verify_rule_bool(const json &input, const json &rule)
+    {
+        assert(rule.at("type") == "bool");
+
+        if (!input.is_boolean())
+            return false;
+
+        return true;
+    };
 
     std::string sjv::log2str()
     {
         std::stringstream s;
 
-        for (log_item i: log)
+        for (log_item i : log)
         {
             s << i.first << ": " << i.second << std::endl;
-            s << std::endl;
         }
         return s.str();
-    }
+    };
 } // namespace sjv

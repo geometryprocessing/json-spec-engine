@@ -1,0 +1,41 @@
+{
+    "geometry": [
+        {
+            "mesh": "../data/dummy.obj",
+            "transformation": {
+                "translation": [
+                    0,
+                    0
+                ],
+                "rotation": -30,
+                "scale": [
+                    5,
+                    0.02
+                ]
+            },
+            "volume_selection": 1,
+            "surface_selection": 1,
+            "n_refs": 0,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        },
+        {
+            "mesh": "../data/dummy.msh",
+            "transformation": {
+                "translation": [
+                    0.26,
+                    0.4503
+                ],
+                "rotation": -30,
+                "scale": 1.0
+            },
+            "volume_selection": "../data/dummy.txt",
+            "surface_selection": 2,
+            "n_refs": 0,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        }
+    ]
+}

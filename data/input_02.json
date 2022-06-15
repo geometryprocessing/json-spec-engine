@@ -1,0 +1,113 @@
+{
+    "geometry": [
+        {
+            "mesh": "../../../meshes/2D/simple/square.obj",
+            "transformation": {
+                "translation": [
+                    0,
+                    0
+                ],
+                "rotation": -30,
+                "scale": [
+                    5,
+                    0.02
+                ]
+            },
+            "volume_selection": 1,
+            "surface_selection": 1,
+            "n_refs": 0,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        },
+        {
+            "mesh": "../../../meshes/2D/simple/square1K.msh",
+            "transformation": {
+                "translation": [
+                    0.26,
+                    0.4503
+                ],
+                "rotation": -30,
+                "scale": 1.0
+            },
+            "volume_selection": 2,
+            "surface_selection": 2,
+            "n_refs": 0,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        }
+    ],
+    "space": {
+        "discr_order": 1
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 0.001,
+        "friction_coefficient": 0.6
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        },
+        "nonlinear": {
+            "line_search": {
+                "method": "backtracking"
+            },
+            "f_delta": 1e-15,
+            "grad_norm": 1e-05,
+            "max_iterations": 300,
+            "use_grad_norm": true
+        },
+        "contact": {
+            "friction_iterations": 10,
+            "friction_convergence_tol": 0.01,
+            "barrier_stiffness": 1000000000.0,
+            "lagged_damping_weight": 10
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [
+            0,
+            9.81
+        ],
+        "dirichlet_boundary": [
+            {
+                "id": 1,
+                "value": [
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    "materials": [
+        {
+            "id": 1,
+            "E": 70000000.0,
+            "nu": 0.48,
+            "rho": 1240,
+            "type": "NeoHookean"
+        },
+        {
+            "id": 2,
+            "E": 70000000.0,
+            "nu": 0.48,
+            "rho": 1240,
+            "type": "NeoHookean"
+        }
+    ],
+    "output": {
+        "paraview": {
+            "file_name": "sol.vtu",
+            "options": {
+                "material": true
+            }
+        },
+        "advanced": {
+            "save_solve_sequence_debug": true,
+            "save_time_sequence": false,
+            "save_nl_solve_sequence": false
+        }
+    }
+}

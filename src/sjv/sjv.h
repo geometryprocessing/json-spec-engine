@@ -26,9 +26,10 @@ namespace sjv
         bool verify_rule_int(const json &input, const json &rule);
         bool verify_rule_string(const json &input, const json &rule);
         bool verify_rule_object(const json &input, const json &rule);
+        bool verify_rule_bool(const json &input, const json &rule);
 
         // Working directory
-        string cwd = "";
+        string cwd = ".";
 
         // if strict == false, a json is valid even if it has entries not validated by a rule
         bool strict = false;
