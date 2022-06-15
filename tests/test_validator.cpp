@@ -9,9 +9,27 @@
 
 using namespace sjv;
 
-
-TEST_CASE("eigen_params", "[solver]")
+TEST_CASE("single_rule", "[validator]")
 {
-    REQUIRE(true);
+    json input = R"( 
+        {
+            "field1": "string", 
+            "field2": 42 
+        }
+        )"_json;
 
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "dict",
+            "key_fields": ["field1"],
+            "mandatory_fields": ["field1"]
+        }
+        ]
+        )"_json;
+
+    sjv::sjv sjv;
+
+    REQUIRE(sjv.verify_json(input,rules));
 }
