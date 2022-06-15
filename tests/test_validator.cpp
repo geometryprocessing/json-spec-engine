@@ -123,3 +123,69 @@ TEST_CASE("file_type", "[validator]")
     REQUIRE(!sjv.verify_json(input,rules));
 
 }
+
+TEST_CASE("type_string", "[validator]")
+{
+    json input = R"( 
+        {
+            "string1": "teststring"
+        }
+        )"_json;
+
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "skip_check"
+        },
+        {
+            "pointer": "/string1/",
+            "type": "string"
+        }
+        ]
+        )"_json;
+
+    sjv::sjv sjv;
+
+    REQUIRE(sjv.verify_json(input,rules));
+
+    rules[1]["options"][0] = "blah";
+
+    REQUIRE(!sjv.verify_json(input,rules));
+
+    rules[1]["options"][1] = "teststring";
+
+    REQUIRE(sjv.verify_json(input,rules));
+
+}
+
+TEST_CASE("type_object", "[validator]")
+{
+    json input = R"( 
+        {
+            "string1": "teststring"
+        }
+        )"_json;
+
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["string1"]
+        }
+        ]
+        )"_json;
+
+    sjv::sjv sjv;
+
+    sjv.strict = true;
+    REQUIRE(!sjv.verify_json(input,rules));
+    sjv.strict = false;
+    REQUIRE(sjv.verify_json(input,rules));
+
+    rules[0]["required"][1] = "randomstring";
+
+    REQUIRE(!sjv.verify_json(input,rules));
+
+}
