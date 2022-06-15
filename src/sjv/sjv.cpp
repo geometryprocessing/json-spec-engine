@@ -201,4 +201,15 @@ namespace sjv
         return true;
     };
 
+    std::string sjv::log2str()
+    {
+        std::stringstream s;
+
+        for (log_item i: log)
+        {
+            s << i.first << ": " << i.second << std::endl;
+            s << std::endl;
+        }
+        return s.str();
+    }
 } // namespace sjv

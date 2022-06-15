@@ -29,6 +29,7 @@ TEST_CASE("single_rule", "[validator]")
     sjv::sjv sjv;
 
     REQUIRE(sjv.verify_json(input,rules));
+
 }
 
 TEST_CASE("only_one_rule_can_be_valid", "[validator]")
@@ -188,4 +189,32 @@ TEST_CASE("type_object", "[validator]")
 
     REQUIRE(!sjv.verify_json(input,rules));
 
+}
+
+TEST_CASE("file1", "[validator]")
+{
+    json input = R"( 
+        {
+            "string1": "teststring"
+        }
+        )"_json;
+
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["string1"]
+        }
+        ]
+        )"_json;
+
+    sjv::sjv sjv;
+
+    sjv.strict = true;
+
+    bool r = sjv.verify_json(input,rules); 
+    std:: string s = sjv.log2str();
+    INFO(s);
+    REQUIRE(r);
 }

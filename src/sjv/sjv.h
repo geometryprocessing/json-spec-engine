@@ -36,6 +36,9 @@ namespace sjv
         // message list
         typedef std::pair<std::string,std::string> log_item;
         std::vector<log_item> log;
+
+        // log to string
+        std::string log2str();
     };
 
 } // namespace sjv
