@@ -9,7 +9,7 @@ using string = std::string;
 
 namespace sjv
 {
-    class sjv
+    class SJV
     {
     public:
         // verify the input json against the set of rules in specs

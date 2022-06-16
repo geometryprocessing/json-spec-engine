@@ -7,13 +7,13 @@
 
 namespace sjv
 {
-    bool sjv::verify_json(const json &input, const json &rules)
+    bool SJV::verify_json(const json &input, const json &rules)
     {
         log.clear();
         return verify_json("/", input, rules);
     }
 
-    bool sjv::verify_json(const string &pointer, const json &input, const json &rules)
+    bool SJV::verify_json(const string &pointer, const json &input, const json &rules)
     {
         // Polymorphism on list, a single item or a list are indistinguishable
         // All the elements in the list must pass the test
@@ -79,7 +79,7 @@ namespace sjv
         // If they all pass, return true
         return true;
     };
-    bool sjv::verify_rule(const json &input, const json &rule)
+    bool SJV::verify_rule(const json &input, const json &rule)
     {
         string type = rule.at("type");
         if (type == "skip_check")
@@ -104,7 +104,7 @@ namespace sjv
             return false;
         }
     };
-    bool sjv::verify_rule_file(const json &input, const json &rule)
+    bool SJV::verify_rule_file(const json &input, const json &rule)
     {
         assert(rule.at("type") == "file");
 
@@ -134,7 +134,7 @@ namespace sjv
 
         return true;
     };
-    bool sjv::verify_rule_folder(const json &input, const json &rule)
+    bool SJV::verify_rule_folder(const json &input, const json &rule)
     {
         assert(rule.at("type") == "folder");
 
@@ -150,7 +150,7 @@ namespace sjv
                 
         return true;
     };
-    bool sjv::verify_rule_float(const json &input, const json &rule)
+    bool SJV::verify_rule_float(const json &input, const json &rule)
     {
         assert(rule.at("type") == "float");
 
@@ -165,7 +165,7 @@ namespace sjv
 
         return true;
     };
-    bool sjv::verify_rule_int(const json &input, const json &rule)
+    bool SJV::verify_rule_int(const json &input, const json &rule)
     {
         assert(rule.at("type") == "int");
 
@@ -180,7 +180,7 @@ namespace sjv
 
         return true;
     };
-    bool sjv::verify_rule_string(const json &input, const json &rule)
+    bool SJV::verify_rule_string(const json &input, const json &rule)
     {
         assert(rule.at("type") == "string");
 
@@ -199,7 +199,7 @@ namespace sjv
 
         return true;
     };
-    bool sjv::verify_rule_object(const json &input, const json &rule)
+    bool SJV::verify_rule_object(const json &input, const json &rule)
     {
         assert(rule.at("type") == "object");
 
@@ -213,7 +213,7 @@ namespace sjv
 
         return true;
     };
-    bool sjv::verify_rule_bool(const json &input, const json &rule)
+    bool SJV::verify_rule_bool(const json &input, const json &rule)
     {
         assert(rule.at("type") == "bool");
 
@@ -223,7 +223,7 @@ namespace sjv
         return true;
     };
 
-    std::string sjv::log2str()
+    std::string SJV::log2str()
     {
         std::stringstream s;
 

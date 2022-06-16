@@ -26,7 +26,7 @@ TEST_CASE("single_rule", "[validator]")
         ]
         )"_json;
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
 
     REQUIRE(sjv.verify_json(input,rules));
 
@@ -52,7 +52,7 @@ TEST_CASE("only_one_rule_can_be_valid", "[validator]")
         ]
         )"_json;
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
 
     REQUIRE(!sjv.verify_json(input,rules));
 }
@@ -79,7 +79,7 @@ TEST_CASE("min_bound_numeric", "[validator]")
         ]
         )"_json;
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
 
     REQUIRE(sjv.verify_json(input,rules));
 
@@ -110,7 +110,7 @@ TEST_CASE("file_type", "[validator]")
         ]
         )"_json;
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
     sjv.cwd = std::filesystem::current_path();
 
     REQUIRE(!sjv.verify_json(input,rules));
@@ -146,7 +146,7 @@ TEST_CASE("type_string", "[validator]")
         ]
         )"_json;
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
 
     REQUIRE(sjv.verify_json(input,rules));
 
@@ -178,7 +178,7 @@ TEST_CASE("type_object", "[validator]")
         ]
         )"_json;
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
 
     sjv.strict = true;
     REQUIRE(!sjv.verify_json(input,rules));
@@ -199,7 +199,7 @@ TEST_CASE("file_01", "[validator]")
     std::ifstream ifs2("../data/rules_01.json");
     json rules = json::parse(ifs2);
 
-    sjv::sjv sjv;
+    sjv::SJV sjv;
 
     sjv.strict = true;
 
