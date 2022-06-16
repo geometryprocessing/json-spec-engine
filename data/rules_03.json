@@ -6,98 +6,119 @@
         "doc": "Root of the configuration file."
     },
     {
-        "pointer": "/geometry/",
+        "pointer": "/geometry",
+        "type": "list",
+        "min": 1,
+        "doc": "List of /geometry objects."
+    },
+    {
+        "pointer": "/geometry/*",
         "type": "object",
         "required": ["mesh"],
-        "optional": ["transformation","volume_selection","surface_selection","n_refs","advanced","is_obstacle", "enabled"],
+        "optional": ["transformation","volume_selection","surface_selection","n_refs","advanced"],
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions and materials."
     },
     {
-        "pointer": "/geometry/mesh/",
+        "pointer": "/geometry/*/mesh",
         "type": "file",
         "extensions": [".obj",".msh"],
         "doc": "Path of the mesh file to load."
     },
     {
-        "pointer": "/geometry/transformation/",
+        "pointer": "/geometry/*/transformation",
         "type": "object",
         "default": null,
         "optional": ["translation","rotation","scale"],
         "doc": "Geometric transformations applied to the geometry after loading it."
     },
     {
-        "pointer": "/geometry/transformation/translation/",
+        "pointer": "/geometry/*/transformation/translation",
+        "type": "list",
+        "default": null
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation",
+        "type": "list",
+        "default": null
+    },
+    {
+        "pointer": "/geometry/*/transformation/scale",
+        "type": "list",
+        "default": null
+    },
+    {
+        "pointer": "/geometry/*/transformation/translation/*",
         "type": "float",
         "default": [0,0,0],
         "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
     },
     {
-        "pointer": "/geometry/transformation/rotation/",
+        "pointer": "/geometry/*/transformation/rotation/*",
         "default": 0,
         "type": "float"
     },
     {
-        "pointer": "/geometry/transformation/scale/",
+        "pointer": "/geometry/*/transformation/scale/*",
         "default": 0,
         "type": "float"
     },
     {
-        "pointer": "/geometry/volume_selection/",
+        "pointer": "/geometry/*/volume_selection",
         "type": "int",
         "default": 0
     },
     {
-        "pointer": "/geometry/volume_selection/",
+        "pointer": "/geometry/*/volume_selection",
         "type": "file",
         "extensions": [".txt"]
     },
     {
-        "pointer": "/geometry/surface_selection/",
+        "pointer": "/geometry/*/surface_selection",
         "type": "int",
         "default": null
     },
     {
-        "pointer": "/geometry/surface_selection/",
+        "pointer": "/geometry/*/surface_selection",
         "type": "file",
         "extensions": [".txt"]
     },
     {
-        "pointer": "/geometry/n_refs/",
+        "pointer": "/geometry/*/n_refs",
         "type": "int",
         "default": 0
     },
     {
-        "pointer": "/geometry/advanced/",
+        "pointer": "/geometry/*/advanced",
         "type": "object",
         "optional": ["normalize_mesh"],
         "default": null
     },
     {
-        "pointer": "/geometry/advanced/normalize_mesh/",
+        "pointer": "/geometry/*/advanced/normalize_mesh",
         "type": "bool",
         "default": false
     },
     {
-        "pointer": "/geometry/is_obstacle",
+        "pointer": "/geometry/*/is_obstacle",
         "type": "bool",
-        "default": false
+        "default": "//TODO"
     },
     {
-        "pointer": "/geometry/enabled",
+        "pointer": "/geometry/*/enabled",
         "type": "bool",
-        "default": false
+        "default": "//TODO"
     },
     {
         "pointer": "/space/",
         "type": "object",
         "optional": ["advanced"],
-        "doc": "Spcace parameter"
+        "doc": "Spcace parameter//TODO"
     },
     {
         "pointer": "/space/advanced",
         "type": "object",
         "optional": ["quadrature_order"],
-        "doc": ""
+        "doc": "//TODO"
     },
     {
         "pointer": "/space/advanced/quadrature_order",
@@ -108,7 +129,7 @@
         "pointer": "/time/",
         "type": "object",
         "optional": ["tend", "dt", "time_steps"],
-        "doc": ""
+        "doc": "The time parameters"
     },
     {
         "pointer": "/time/tend",
@@ -161,13 +182,25 @@
     {
         "pointer": "/solver/linear/solver",
         "type": "string",
-        "default": "",
+        "default": "//TODO",
         "doc": "linear solver type"
     },
     {
         "pointer": "/solver/nonlinear",
         "type": "object",
-        "optional": ["solver"],
-        "doc": "linear solver type"
+        "optional": ["solver", "line_search", "grad_norm", "use_grad_norm"],
+        "doc": "nonlinear solver type"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search",
+        "type": "object",
+        "optional": ["method"],
+        "doc": "Settings for line searcher"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search/method",
+        "type": "string",
+
     }
+
 ]
