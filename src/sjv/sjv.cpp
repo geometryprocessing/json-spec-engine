@@ -73,8 +73,42 @@ namespace sjv
         // If it passes and if it is a dictionary, then test all childrens
         if (input.is_structured())
             for (auto &i : input.items())
-                if (!verify_json(pointer + i.key() + "/", i.value(), rules))
+            {
+                string new_pointer = pointer + i.key() + "/";
+                // first of all, let's check if the specs are correct
+                json defaults = collect_default_rules(new_pointer,rules); 
+
+                // if it is mandatory, make sure there are no defaults
+                if (matching_rules[0].contains("required") && contained_in_list(i.key(),matching_rules[0]["required"]))
+                {
+                    if (defaults.size() != 0)
+                    {
+                        log.push_back(log_item("error","Inconsistent specifications: " + new_pointer + " is a mandatory field with a default value."));
+                        return false;
+                    }
+                }
+                // if it is optional, there should be only one default in the specs
+                else if (matching_rules[0].contains("optional") && contained_in_list(i.key(),matching_rules[0]["optional"]))
+                {
+                    if (defaults.size() != 1)
+                    {
+                        log.push_back(log_item("error","Inconsistent specifications: " + new_pointer + " is an optional field with " + std::to_string(defaults.size()) + " default values."));
+                        return false;
+                    }
+                }
+                // if it is not mandatory and not optional, something is wrong
+                else
+                {
+                    log.push_back(log_item("warning","Inconsistent specifications: " + new_pointer + " is neither an optional or a mandatory field."));
+                    if (strict)
+                        return false;
+                }
+
+                // now let's make sure it can be validated
+                if (!verify_json(new_pointer, i.value(), rules))
                     return false;
+
+            }
 
         // If they all pass, return true
         return true;
@@ -82,9 +116,7 @@ namespace sjv
     bool SJV::verify_rule(const json &input, const json &rule)
     {
         string type = rule.at("type");
-        if (type == "skip_check")
-            return true;
-        else if (type == "float")
+        if (type == "float")
             return verify_rule_float(input, rule);
         else if (type == "int")
             return verify_rule_int(input, rule);
@@ -232,5 +264,25 @@ namespace sjv
             s << i.first << ": " << i.second << std::endl;
         }
         return s.str();
+    };
+    
+    json SJV::collect_default_rules(const string &pointer, const json &rules)
+    {
+        // Find all rules that apply for the input node
+        // TODO: accelerate this
+
+        std::vector<json> matching_rules;
+        for (auto i : rules)
+        {
+            if (i.at("pointer") == pointer && i.contains("default"))
+                matching_rules.push_back(i);
+        }
+
+        return matching_rules;
+    };
+
+    bool SJV::contained_in_list(string item, const json& list)
+    {
+        return std::find(list.begin(),list.end(),item) != list.end();
     };
 } // namespace sjv

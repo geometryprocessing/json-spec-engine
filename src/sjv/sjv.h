@@ -14,6 +14,8 @@ namespace sjv
     public:
         // verify the input json against the set of rules in specs
         bool verify_json(const json &input, const json &rules);
+
+        // Verify a node pointed by 
         bool verify_json(const string &pointer, const json &input, const json &rules);
 
         // Dispatcher for rule verification
@@ -28,6 +30,12 @@ namespace sjv
         bool verify_rule_object(const json &input, const json &rule);
         bool verify_rule_bool(const json &input, const json &rule);
 
+        // Collect all rules having a default for a given pointer
+        json collect_default_rules(const string &pointer, const json &rules);
+
+        // TODO
+        json generate_default_json(const json &rules);
+
         // Working directory
         string cwd = ".";
 
@@ -40,6 +48,9 @@ namespace sjv
 
         // log to string
         std::string log2str();
+
+        // Utils
+        bool contained_in_list(string item, const json& list);
     };
 
 } // namespace sjv

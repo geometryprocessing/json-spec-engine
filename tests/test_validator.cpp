@@ -21,15 +21,16 @@ TEST_CASE("single_rule", "[validator]")
         [
         {
             "pointer": "/",
-            "type": "skip_check"
+            "type": "object"
         }
         ]
         )"_json;
 
     sjv::SJV sjv;
 
-    REQUIRE(sjv.verify_json(input,rules));
-
+    bool b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(b);
 }
 
 TEST_CASE("only_one_rule_can_be_valid", "[validator]")
@@ -43,18 +44,20 @@ TEST_CASE("only_one_rule_can_be_valid", "[validator]")
         [
         {
             "pointer": "/",
-            "type": "skip_check"
+            "type": "object"
         },
         {
             "pointer": "/",
-            "type": "skip_check"
+            "type": "object"
         }
         ]
         )"_json;
 
     sjv::SJV sjv;
 
-    REQUIRE(!sjv.verify_json(input,rules));
+    bool b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(!b);
 }
 
 TEST_CASE("min_bound_numeric", "[validator]")
@@ -69,7 +72,8 @@ TEST_CASE("min_bound_numeric", "[validator]")
         [
         {
             "pointer": "/",
-            "type": "skip_check"
+            "type": "object",
+            "required": ["field1"]
         },
         {
             "pointer": "/field1/",
@@ -81,11 +85,15 @@ TEST_CASE("min_bound_numeric", "[validator]")
 
     sjv::SJV sjv;
 
-    REQUIRE(sjv.verify_json(input,rules));
+    bool b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(b);
 
     input["field1"] = 40.5;
 
-    REQUIRE(!sjv.verify_json(input,rules));
+    b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(!b);
 }
 
 TEST_CASE("file_type", "[validator]")
@@ -100,28 +108,40 @@ TEST_CASE("file_type", "[validator]")
         [
         {
             "pointer": "/",
-            "type": "skip_check"
+            "type": "object",
+            "optional": ["file1"]
         },
         {
             "pointer": "/file1/",
             "type": "file",
-            "extensions": [".txt"]
+            "extensions": [".txt"],
+            "default": "somestring"
         }
         ]
         )"_json;
 
     sjv::SJV sjv;
-    sjv.cwd = std::filesystem::current_path();
+    bool b;
 
-    REQUIRE(!sjv.verify_json(input,rules));
+    sjv.cwd = std::filesystem::current_path();
+    sjv.strict = true;
+
+    b = sjv.verify_json(input,rules);
+    
+    INFO(sjv.log2str());
+    REQUIRE(!b);
 
     input["file1"] = "CMakeCache.txt";
 
-    REQUIRE(sjv.verify_json(input,rules));
+    b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(b);
 
     rules[1]["extensions"][0] = ".msh";
 
-    REQUIRE(!sjv.verify_json(input,rules));
+    b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(!b);
 
 }
 
@@ -137,7 +157,7 @@ TEST_CASE("type_string", "[validator]")
         [
         {
             "pointer": "/",
-            "type": "skip_check"
+            "type": "object"
         },
         {
             "pointer": "/string1/",
@@ -148,15 +168,22 @@ TEST_CASE("type_string", "[validator]")
 
     sjv::SJV sjv;
 
-    REQUIRE(sjv.verify_json(input,rules));
+    bool b;
+    b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(b);
 
     rules[1]["options"][0] = "blah";
 
-    REQUIRE(!sjv.verify_json(input,rules));
+    b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(!b);
 
     rules[1]["options"][1] = "teststring";
 
-    REQUIRE(sjv.verify_json(input,rules));
+    b = sjv.verify_json(input,rules);
+    INFO(sjv.log2str());
+    REQUIRE(b);
 
 }
 
