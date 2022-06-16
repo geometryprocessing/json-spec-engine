@@ -1,10 +1,11 @@
 # Tags supported for each type
 
-## all
+## float
 
-list
+* min: number
+* max: number
 
-## float,int: 
+## int 
 
 * min: number
 * max: number
@@ -17,10 +18,17 @@ list
 
 ## string
 
-options: ["these","are","options"]
+* options: ["these","are","options"]
 
 ## object
 
-required: list of fields required for this object to be valid
+* required: list of fields required for this object to be valid
+* optional: list of fields that are optional. Every optional field must have at least one rule with a default
 
-## skip-
+## list
+
+* min: minimal size
+* max: maximal size
+
+## bool
+
