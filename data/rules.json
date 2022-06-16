@@ -2,8 +2,8 @@
     {
         "pointer": "/",
         "type": "object",
-        "required": ["geometry"],
-        "optional":["boundary_conditions", "space", "time", "contact", "solver", "materials", "output"],
+        "required": ["geometry", "materials"],
+        "optional":["boundary_conditions", "space", "time", "contact", "solver", "output"],
         "doc": "Root of the configuration file."
     },
     {
@@ -90,23 +90,24 @@
     {
         "pointer": "/geometry/*/surface_selection/*",
         "type": "object",
-        "optional":["id", "axis", "position"],
+        "required":["id"],
+        "optional":["axis", "position"],
         "default": null
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
         "type": "int",
-        "default": "//TODO"
+        "default": null
     },
     {
         "pointer": "/geometry/*/surface_selection/*/axis",
         "type": "int",
-        "default": "//TODO"
+        "default": null
     },
     {
         "pointer": "/geometry/*/surface_selection/*/position",
         "type": "float",
-        "default": "//TODO"
+        "default": null
     },
     {
         "pointer": "/geometry/*/n_refs",
@@ -127,26 +128,26 @@
     {
         "pointer": "/geometry/*/is_obstacle",
         "type": "bool",
-        "default": "//TODO"
+        "default": false
     },
     {
         "pointer": "/geometry/*/enabled",
         "type": "bool",
-        "default": "//TODO"
+        "default": true
     },
     {
         "pointer": "/space",
         "type": "object",
         "optional": ["advanced"],
-        "default": "//TODO",
-        "doc": "Spcace parameter//TODO"
+        "default": null,
+        "doc": "Parameters related to space discretization."
     },
     {
         "pointer": "/space/advanced",
         "type": "object",
-        "default": "//TODO",
+        "default": null,
         "optional": ["quadrature_order"],
-        "doc": "//TODO"
+        "doc": "Advanced settings for space"
     },
     {
         "pointer": "/space/advanced/quadrature_order",
@@ -156,14 +157,14 @@
     {
         "pointer": "/time",
         "type": "object",
-        "default": "//TODO",
+        "default": null,
         "optional": ["tend", "dt", "time_steps"],
         "doc": "The time parameters"
     },
     {
         "pointer": "/time/tend",
         "type": "float",
-        "min":0,
+        "min":0, 
         "default": 1
     },
     {
@@ -181,7 +182,7 @@
     {
         "pointer": "/contact",
         "type": "object",
-        "default":"//TODO",
+        "default": null,
         "optional": ["enabled", "dhat", "friction_coefficient"],
         "doc": "All the parameters to define contacts like collisions, friction coefficient"
     },
@@ -194,7 +195,7 @@
         "pointer": "/contact/dhat",
         "type": "float",
         "min":0,
-        "default": 0.03
+        "default": 1e-3
     },
     {
         "pointer": "/contact/friction_coefficient",
@@ -206,14 +207,14 @@
         "pointer": "/solver",
         "type": "object",
         "optional": ["linear", "nonlinear", "advanced"],
-        "default": "//TODO",
+        "default": null,
         "doc": "The settings for the solver including Linear solver, nonlinear solver, and some advanced options"
     },
     {
         "pointer": "/solver/linear",
         "type": "object",
         "optional": ["solver"],
-        "default": "//TODO",
+        "default": null,
         "doc": "Settings for linear solver"
     },
     {
@@ -225,7 +226,7 @@
     {
         "pointer": "/solver/nonlinear",
         "type": "object",
-        "default": "//TODO",
+        "default": null,
         "optional": ["solver", "line_search", "grad_norm", "use_grad_norm"],
         "doc": "Settings for nonlinear solver"
     },
@@ -233,19 +234,19 @@
         "pointer": "/solver/nonlinear/line_search",
         "type": "object",
         "optional": ["method"],
-        "default": "//TODO",
+        "default": null,
         "doc": "Settings for line searcher"
     },
     {
         "pointer": "/solver/nonlinear/line_search/method",
         "type": "string",
-        "default": "//TODO",
+        "default": "backtracking",
         "doc": "line search type"
     },
     {
         "pointer": "/solver/nonlinear/solver",
         "type": "string",
-        "default": "//TODO",
+        "default": "newton",
         "doc": "Nonlinear solver type"
     },
     {
@@ -258,86 +259,83 @@
     {
         "pointer": "/solver/nonlinear/use_grad_norm",
         "type": "bool",
-        "default": "//TODO",
+        "default": true,
         "doc": "//TODO"
     },
     {
         "pointer": "/solver/advanced",
         "type": "object",
-        "default":"//TODO",
+        "default": null,
         "optional": ["lump_mass_matrix"],
         "doc": "Advanced settings for the solver"
     },
     {
         "pointer": "/solver/advanced/lump_mass_matrix",
         "type": "bool",
-        "default":"//TODO"
+        "default": false
     },
     {
         "pointer": "/boundary_conditions",
         "type": "object",
-        "default":"//TODO",
-        "optional":["rhs", "dirichlet_boundary", "neumann_boundary"],
+        "default": null,
+        "required":["rhs"],
+        "optional":["dirichlet_boundary", "neumann_boundary", "obstacle_displacements"],
         "doc": "The settings for boundary conditions"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "list",
-        "default":"//TODO",
-        "doc": "//TODO"
+        "doc": "Right hand side of the system being solved"
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
-        "type":"float",
+        "type": "float",
         "default":"//TODO"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary",
         "type":"list",
-        "default":"//TODO",
+        "default": [],
         "doc": "The list of dirichlet boundary condition describing the displacement"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*",
         "type":"object",
-        "default":"//TODO",
-        "optional":["id", "value", "dimension"],
+        "default": null,
+        "required":["id","value"],
+        "optional":["dimension"],
         "doc": "Dirichlet boundary condition"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/id",
         "type":"int",
-        "default":"//TODO",
         "doc": "id of Dirichlet boundary condition"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/value",
         "type":"list",
-        "default":"//TODO",
         "doc": "values of Dirichlet boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/value/*",
         "type":"string",
-        "default":"//TODO",
         "doc": "values of Dirichlet boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/value/*",
         "type":"float",
-        "default":"//TODO",
         "doc": "values of Dirichlet boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/dimension",
         "type":"list",
-        "default":"//TODO",
+        "default": [true, true, true],
         "doc": "If the dimension is under dirichlet boundary condition"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/dimension/*",
         "type":"bool",
-        "default":"//TODO",
+        "default": true,
         "doc": "If the dimension is under dirichlet boundary condition"
     },
     {
@@ -386,31 +384,37 @@
     {
         "pointer":"/boundary_conditions/neumann_boundary/*/dimension",
         "type":"list",
-        "default":"//TODO",
+        "default":[true, true, true],
         "doc": "If the dimension is under neumann boundary condition"
     },
     {
         "pointer":"/boundary_conditions/neumann_boundary/*/dimension/*",
         "type":"bool",
-        "default":"//TODO",
+        "default":true,
         "doc": "If the dimension is under neumann boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/obstacle_displacements",
+        "type":"list",
+        "default":"//TODO",
+        "doc": "The displacement functions for obstacles"
     },
     {
         "pointer": "/materials",
         "type": "list",
-        "default":"//TODO",
         "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
     },
     {
         "pointer": "/materials/*",
         "type": "object",
-        "optional": ["id", "E", "nu", "rho", "type", "mu", "lambda"],
+        "required":["type"],
+        "optional": ["id", "E", "nu", "rho", "mu", "lambda"],
         "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
     },
     {
         "pointer": "/materials/*/id",
         "type":"int",
-        "default":"//TODO",
+        "default": "all",
         "doc":"id"
     },
     {
@@ -434,7 +438,6 @@
     {
         "pointer": "/materials/*/type",
         "type":"string",
-        "default":"//TODO",
         "doc":"Type of material"
     },
     {
@@ -453,7 +456,7 @@
         "pointer": "/output",
         "type": "object",
         "optional":["json","paraview", "advanced"],
-        "default":"//TODO",
+        "default": null,
         "doc": "Output settings about what to export"
     },
     {
@@ -466,13 +469,13 @@
         "pointer": "/output/paraview",
         "type": "object",
         "optional":["file_name", "options", "vismesh_rel_area"],
-        "default":"//TODO",
+        "default": null,
         "doc":"The export options for paraview"
     },
     {
         "pointer":"/output/paraview/file_name",
         "type": "string",
-        "default":"//TODO",
+        "default": "",
         "doc":"The time-dependent result series for the simulation(A list of *.vtu and *.vtm files)."
     },
     {

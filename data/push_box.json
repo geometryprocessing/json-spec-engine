@@ -1,0 +1,137 @@
+{
+    "geometry": [
+        {
+            "mesh": "../data/vol_mesh/cube.msh",
+            "transformation": {
+                "translation": [
+                    -0.65,
+                    0.2,
+                    0
+                ],
+                "scale": 0.4
+            },
+            "volume_selection": 3,
+            "surface_selection": 3,
+            "advanced": {
+                "normalize_mesh": false
+            }
+        },
+        {
+            "mesh": "../data/surf_mesh/sphere.obj",
+            "is_obstacle": true,
+            "enabled": true,
+            "transformation": {
+                "translation": [
+                    -1.0,
+                    0.2,
+                    0
+                ],
+                "scale": 0.1
+            },
+            "surface_selection": 1000
+        },
+        {
+            "mesh": "../data/surf_mesh/cube_dense.obj",
+            "is_obstacle": true,
+            "enabled": true,
+            "transformation": {
+                "translation": [
+                    0,
+                    -0.0051,
+                    0
+                ],
+                "scale": [
+                    4,
+                    0.01,
+                    4
+                ]
+            },
+            "surface_selection": 1001
+        }
+    ],
+    "boundary_conditions": {
+        "obstacle_displacements": [
+            {
+                "id": 1000,
+                "value": [
+                    "0",
+                    "0",
+                    "0"
+                ]
+            },
+            {
+                "id": 1001,
+                "value": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
+        "rhs": [
+            0,
+            9.81,
+            0
+        ]
+    },
+    "space": {
+        "advanced": {
+            "bc_method": "sample",
+            "quadrature_order": -1
+        }
+    },
+    "time": {
+        "t0": 0,
+        "dt": 0.0167,
+        "time_steps": 20
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 0.001,
+        "friction_coefficient": 0.8
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::CholmodSupernodalLLT"
+        },
+        "nonlinear": {
+            "line_search": {
+                "method": "backtracking"
+            },
+            "grad_norm": 0.01,
+            "use_grad_norm": false
+        },
+        "augmented_lagrangian": {
+            "max_weight": 1e+30
+        },
+        "contact": {
+            "friction_iterations": 100,
+            "CCD": {
+                "broad_phase": "STQ"
+            }
+        }
+    },
+    "materials": [
+        {
+            "id": 3,
+            "E": 100000000.0,
+            "nu": 0.48,
+            "rho": 1500.0,
+            "type": "NeoHookean"
+        }
+    ],
+    "output": {
+        "paraview": {
+            "file_name": "sim.pvd",
+            "options": {
+                "material": true,
+                "body_ids": true
+            },
+            "vismesh_rel_area": 10000000
+        },
+        "advanced": {
+            "save_solve_sequence_debug": false,
+            "save_time_sequence": true
+        }
+    }
+}

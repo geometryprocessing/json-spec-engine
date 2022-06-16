@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VTKFile type="Collection" version="0.1" byte_order="LittleEndian" compressor="vtkZLibDataCompressor">
+    <Collection>
+        <DataSet timestep="0" group="" part="0" file="step_0.vtm"/>
+        <DataSet timestep="0.0167" group="" part="0" file="step_1.vtm"/>
+        <DataSet timestep="0.0334" group="" part="0" file="step_2.vtm"/>
+        <DataSet timestep="0.0501" group="" part="0" file="step_3.vtm"/>
+        <DataSet timestep="0.0668" group="" part="0" file="step_4.vtm"/>
+        <DataSet timestep="0.0835" group="" part="0" file="step_5.vtm"/>
+        <DataSet timestep="0.1002" group="" part="0" file="step_6.vtm"/>
+        <DataSet timestep="0.1169" group="" part="0" file="step_7.vtm"/>
+        <DataSet timestep="0.1336" group="" part="0" file="step_8.vtm"/>
+        <DataSet timestep="0.1503" group="" part="0" file="step_9.vtm"/>
+        <DataSet timestep="0.167" group="" part="0" file="step_10.vtm"/>
+        <DataSet timestep="0.1837" group="" part="0" file="step_11.vtm"/>
+        <DataSet timestep="0.2004" group="" part="0" file="step_12.vtm"/>
+        <DataSet timestep="0.2171" group="" part="0" file="step_13.vtm"/>
+        <DataSet timestep="0.2338" group="" part="0" file="step_14.vtm"/>
+        <DataSet timestep="0.2505" group="" part="0" file="step_15.vtm"/>
+        <DataSet timestep="0.2672" group="" part="0" file="step_16.vtm"/>
+        <DataSet timestep="0.2839" group="" part="0" file="step_17.vtm"/>
+        <DataSet timestep="0.3006" group="" part="0" file="step_18.vtm"/>
+        <DataSet timestep="0.3173" group="" part="0" file="step_19.vtm"/>
+        <DataSet timestep="0.334" group="" part="0" file="step_20.vtm"/>
+    </Collection>
+</VTKFile>
