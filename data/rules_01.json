@@ -9,6 +9,7 @@
         "pointer": "/geometry/",
         "type": "object",
         "required": ["mesh"],
+        "optional": ["transformation","volume_selection","surface_selection","n_refs","advanced"],
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions and materials."
     },
     {
@@ -20,24 +21,30 @@
     {
         "pointer": "/geometry/transformation/",
         "type": "object",
+        "default": null,
+        "optional": ["translation","rotation","scale"],
         "doc": "Geometric transformations applied to the geometry after loading it."
     },
     {
         "pointer": "/geometry/transformation/translation/",
         "type": "float",
+        "default": [0,0,0],
         "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
     },
     {
         "pointer": "/geometry/transformation/rotation/",
+        "default": 0,
         "type": "float"
     },
     {
         "pointer": "/geometry/transformation/scale/",
+        "default": 0,
         "type": "float"
     },
     {
         "pointer": "/geometry/volume_selection/",
-        "type": "int"
+        "type": "int",
+        "default": 0
     },
     {
         "pointer": "/geometry/volume_selection/",
@@ -46,7 +53,8 @@
     },
     {
         "pointer": "/geometry/surface_selection/",
-        "type": "int"
+        "type": "int",
+        "default": null
     },
     {
         "pointer": "/geometry/surface_selection/",
@@ -55,15 +63,19 @@
     },
     {
         "pointer": "/geometry/n_refs/",
-        "type": "int"
+        "type": "int",
+        "default": 0
     },
     {
         "pointer": "/geometry/advanced/",
-        "type": "object"
+        "type": "object",
+        "optional": ["normalize_mesh"],
+        "default": null
     },
     {
         "pointer": "/geometry/advanced/normalize_mesh/",
-        "type": "bool"
+        "type": "bool",
+        "default": false
     }
 
 ]
