@@ -29,7 +29,8 @@ namespace sjv
         bool verify_rule_string(const json &input, const json &rule);
         bool verify_rule_object(const json &input, const json &rule);
         bool verify_rule_bool(const json &input, const json &rule);
-
+        bool verify_rule_list(const json &input, const json &rule);
+        
         // Collect all rules having a default for a given pointer
         json collect_default_rules(const string &pointer, const json &rules);
 

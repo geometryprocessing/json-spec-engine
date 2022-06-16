@@ -15,16 +15,6 @@ namespace sjv
 
     bool SJV::verify_json(const string &pointer, const json &input, const json &rules)
     {
-        // Polymorphism on list, a single item or a list are indistinguishable
-        // All the elements in the list must pass the test
-        if (input.is_array())
-        {
-            for (auto i : input)
-                if (!verify_json(pointer, i, rules))
-                    return false;
-            return true;
-        }
-
         // Find all rules that apply for the input node
         // TODO: accelerate this
         std::vector<json> matching_rules;
@@ -52,6 +42,8 @@ namespace sjv
 
         if (count == 0 && !matching_rules.empty())
         {
+            // TODO: Before giving up, try again wrapping the entity in a list
+
             std::stringstream s;
             s << "No valid rules in this list:";
             for (auto i : matching_rules)
@@ -71,10 +63,10 @@ namespace sjv
         }
 
         // If it passes and if it is a dictionary, then test all childrens
-        if (input.is_structured())
+        if (input.is_object())
             for (auto &i : input.items())
             {
-                string new_pointer = pointer + i.key() + "/";
+                string new_pointer = (pointer == "/" ? "" : pointer) + "/" + i.key();
                 // first of all, let's check if the specs are correct
                 json defaults = collect_default_rules(new_pointer,rules); 
 
@@ -110,13 +102,25 @@ namespace sjv
 
             }
 
+        // In case of a list
+        // All the elements in the list must pass the test
+        if (input.is_array())
+        {
+            for (auto i : input)
+                if (!verify_json((pointer == "/" ? "" : pointer) + "/*", i, rules))
+                    return false;
+        }
+
+
         // If they all pass, return true
         return true;
     };
     bool SJV::verify_rule(const json &input, const json &rule)
     {
         string type = rule.at("type");
-        if (type == "float")
+        if (type == "list")
+            return verify_rule_list(input, rule);
+        else if (type == "float")
             return verify_rule_float(input, rule);
         else if (type == "int")
             return verify_rule_int(input, rule);
@@ -254,6 +258,23 @@ namespace sjv
 
         return true;
     };
+
+    bool SJV::verify_rule_list(const json &input, const json &rule)
+    {
+        assert(rule.at("type") == "list");
+
+        if (!input.is_array())
+            return false;
+
+        if (rule.contains("min") && !(input.size() >= rule["min"]))
+            return false;
+
+        if (rule.contains("max") && !(input.size() <= rule["max"]))
+            return false;        
+
+        return true;
+    }
+        
 
     std::string SJV::log2str()
     {

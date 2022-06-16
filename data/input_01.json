@@ -7,7 +7,7 @@
                     0,
                     0
                 ],
-                "rotation": -30,
+                "rotation": [-30],
                 "scale": [
                     5,
                     0.02
@@ -27,8 +27,8 @@
                     0.26,
                     0.4503
                 ],
-                "rotation": -30,
-                "scale": 1.0
+                "rotation": [-30],
+                "scale": [1.0]
             },
             "volume_selection": "../data/dummy.txt",
             "surface_selection": 2,

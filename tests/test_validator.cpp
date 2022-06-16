@@ -76,7 +76,7 @@ TEST_CASE("min_bound_numeric", "[validator]")
             "required": ["field1"]
         },
         {
-            "pointer": "/field1/",
+            "pointer": "/field1",
             "type": "float",
             "min": 45
         }
@@ -112,7 +112,7 @@ TEST_CASE("file_type", "[validator]")
             "optional": ["file1"]
         },
         {
-            "pointer": "/file1/",
+            "pointer": "/file1",
             "type": "file",
             "extensions": [".txt"],
             "default": "somestring"
@@ -160,7 +160,7 @@ TEST_CASE("type_string", "[validator]")
             "type": "object"
         },
         {
-            "pointer": "/string1/",
+            "pointer": "/string1",
             "type": "string"
         }
         ]
