@@ -1,0 +1,173 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": ["geometry"],
+        "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/geometry/",
+        "type": "object",
+        "required": ["mesh"],
+        "optional": ["transformation","volume_selection","surface_selection","n_refs","advanced","is_obstacle", "enabled"],
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions and materials."
+    },
+    {
+        "pointer": "/geometry/mesh/",
+        "type": "file",
+        "extensions": [".obj",".msh"],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/transformation/",
+        "type": "object",
+        "default": null,
+        "optional": ["translation","rotation","scale"],
+        "doc": "Geometric transformations applied to the geometry after loading it."
+    },
+    {
+        "pointer": "/geometry/transformation/translation/",
+        "type": "float",
+        "default": [0,0,0],
+        "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/transformation/rotation/",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/transformation/scale/",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/volume_selection/",
+        "type": "int",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/volume_selection/",
+        "type": "file",
+        "extensions": [".txt"]
+    },
+    {
+        "pointer": "/geometry/surface_selection/",
+        "type": "int",
+        "default": null
+    },
+    {
+        "pointer": "/geometry/surface_selection/",
+        "type": "file",
+        "extensions": [".txt"]
+    },
+    {
+        "pointer": "/geometry/n_refs/",
+        "type": "int",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/advanced/",
+        "type": "object",
+        "optional": ["normalize_mesh"],
+        "default": null
+    },
+    {
+        "pointer": "/geometry/advanced/normalize_mesh/",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/is_obstacle",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/geometry/enabled",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/space/",
+        "type": "object",
+        "optional": ["advanced"],
+        "doc": "Spcace parameter"
+    },
+    {
+        "pointer": "/space/advanced",
+        "type": "object",
+        "optional": ["quadrature_order"],
+        "doc": ""
+    },
+    {
+        "pointer": "/space/advanced/quadrature_order",
+        "type": "int",
+        "default": 1
+    },
+    {
+        "pointer": "/time/",
+        "type": "object",
+        "optional": ["tend", "dt", "time_steps"],
+        "doc": ""
+    },
+    {
+        "pointer": "/time/tend",
+        "type": "float",
+        "default": 1
+    },
+    {
+        "pointer": "/time/dt",
+        "type": "float",
+        "default": 0.1
+    },
+    {
+        "pointer": "/time/time_steps",
+        "type": "int",
+        "default": 10
+    },
+    {
+        "pointer": "/contact/",
+        "type": "object",
+        "optional": ["enabled", "dhat", "friction_coefficient"],
+        "doc": "All the parameters to define contacts like collisions, friction coefficient"
+    },
+    {
+        "pointer": "/contact/enabled",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/contact/dhat",
+        "type": "float",
+        "default": 0.03
+    },
+    {
+        "pointer": "/contact/friction_coefficient",
+        "type": "float",
+        "default": 0.0
+    },
+    {
+        "pointer": "/solver/",
+        "type": "object",
+        "optional": ["linear", "nonlinear", "advanced"],
+        "doc": "The parameter for the solver"
+    },
+    {
+        "pointer": "/solver/linear",
+        "type": "object",
+        "optional": ["solver"],
+        "doc": "linear solver type"
+    },
+    {
+        "pointer": "/solver/linear/solver",
+        "type": "string",
+        "default": "",
+        "doc": "linear solver type"
+    },
+    {
+        "pointer": "/solver/nonlinear",
+        "type": "object",
+        "optional": ["solver"],
+        "doc": "linear solver type"
+    },
+]

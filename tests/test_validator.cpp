@@ -12,6 +12,7 @@ using namespace sjv;
 
 TEST_CASE("single_rule", "[validator]")
 {
+    INFO("test1.");
     json input = R"( 
         {
         }
@@ -221,6 +222,24 @@ TEST_CASE("type_object", "[validator]")
 TEST_CASE("file_01", "[validator]")
 {
     std::ifstream ifs1("../data/input_01.json");
+    json input = json::parse(ifs1);
+
+    std::ifstream ifs2("../data/rules_01.json");
+    json rules = json::parse(ifs2);
+
+    sjv::SJV sjv;
+
+    sjv.strict = true;
+
+    bool r = sjv.verify_json(input,rules); 
+    std:: string s = sjv.log2str();
+    WARN(s);
+    REQUIRE(r);
+}
+
+TEST_CASE("file_02", "[validator]")
+{
+    std::ifstream ifs1("../data/screw.json");
     json input = json::parse(ifs1);
 
     std::ifstream ifs2("../data/rules_01.json");
