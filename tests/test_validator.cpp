@@ -243,7 +243,7 @@ TEST_CASE("file_02", "[validator]")
     std::ifstream ifs1("../data/screw.json");
     json input = json::parse(ifs1);
 
-    std::ifstream ifs2("../data/rules_01.json");
+    std::ifstream ifs2("../data/rules.json");
     json rules = json::parse(ifs2);
 
     sjv::SJV sjv;

@@ -1,7 +1,7 @@
 {
     "geometry": [
         {
-            "mesh": "data/screw-big.msh",
+            "mesh": "../data/screw-big.msh",
             "transformation": {
                 "translation": [
                     0,
@@ -23,7 +23,7 @@
             ]
         },
         {
-            "mesh": "data/nut-big.stl",
+            "mesh": "../data/nut-big.stl",
             "is_obstacle": true,
             "enabled": true,
             "transformation": {
