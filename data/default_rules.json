@@ -186,35 +186,94 @@
     {
         "pointer": "/geometry/*/surface_selection/*",
         "type": "object",
-        "required":["id"],
-        "optional":["axis", "position","box", "relative"],
-        "default": null
+        "required":["id","box"],
+        "optional":["relative"],
+        "default": null,
+        "typename": "box"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required":["id","radius", "center"],
+        "optional":["relative"],
+        "default": null,
+        "typename": "sphere"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required":["id","point", "normal"],
+        "optional":["relative", "offset"],
+        "default": null,
+        "typename": "plane"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required":["id", "axis", "position"],
+        "default": null,
+        "typename": "axis"
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
         "type": "int"
     },
     {
+        "pointer": "/geometry/*/surface_selection/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/center",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/center/*",
+        "type": "float"
+    },
+    {
         "pointer": "/geometry/*/surface_selection/*/axis",
-        "type": "int",
-        "default": null
+        "type": "int"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/offset",
+        "type": "float"
     },
     {
         "pointer": "/geometry/*/surface_selection/*/position",
-        "type": "float",
-        "default": null
+        "type": "float"
     },
     {
         "pointer": "/geometry/*/surface_selection/*/relative",
         "type": "bool",
-        "default": "//TODO"
+        "default": false
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/point",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/normal",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/normal/*",
+        "type": "float"
     },
     {
         "pointer": "/geometry/*/surface_selection/*/box",
         "type": "list",
         "min":2,
-        "max":2,
-        "default": [[],[]]
+        "max":2
     },
     {
         "pointer": "/geometry/*/surface_selection/*/box/*",
