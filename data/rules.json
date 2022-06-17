@@ -517,7 +517,7 @@
     {
         "pointer": "/output/advanced/save_time_sequence",
         "type":"bool",
-        "default":"//TODO",
+        "default":"TODO",
         "doc": "Whether to save the results for each timestep"
     }
 ]
