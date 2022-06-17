@@ -252,7 +252,7 @@ TEST_CASE("pushbox", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    WARN(s);
+    INFO(s);
     REQUIRE(r);
 }
 
@@ -270,7 +270,7 @@ TEST_CASE("screw", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    WARN(s);
+    INFO(s);
     REQUIRE(r);
 }
 
@@ -288,7 +288,7 @@ TEST_CASE("slingshot", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    WARN(s);
+    INFO(s);
     REQUIRE(r);
 }
 

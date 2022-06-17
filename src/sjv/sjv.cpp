@@ -80,6 +80,8 @@ namespace sjv
 
     bool SJV::verify_json(const string &pointer, const json &input, const json &rules)
     {
+        // if (pointer == "/geometry/*/surface_selection/*")
+        //     std::cout << "gotcha" << std::endl;
         // Find all rules that apply for the input node
         // TODO: accelerate this
         std::vector<json> matching_rules = collect_pointer(pointer, rules);
@@ -97,10 +99,16 @@ namespace sjv
 
         // Test all rules, only one must pass, otherwise throw exception
         int count = 0;
+        json single_matched_rule;
 
         for (auto i : matching_rules)
+        {
             if (verify_rule(input, i))
+            {
                 count++;
+                single_matched_rule = i;
+            }
+        }
 
         if (count == 0 && !matching_rules.empty()) 
         {
@@ -141,7 +149,7 @@ namespace sjv
                 json defaults = collect_default_rules(new_pointer, rules);
 
                 // if it is mandatory, make sure there are no defaults
-                if (matching_rules[0].contains("required") && contained_in_list(i.key(), matching_rules[0]["required"]))
+                if (single_matched_rule.contains("required") && contained_in_list(i.key(), single_matched_rule["required"]))
                 {
                     if (defaults.size() != 0)
                     {
@@ -150,7 +158,7 @@ namespace sjv
                     }
                 }
                 // if it is optional, there should be only one default in the specs
-                else if (matching_rules[0].contains("optional") && contained_in_list(i.key(), matching_rules[0]["optional"]))
+                else if (single_matched_rule.contains("optional") && contained_in_list(i.key(), single_matched_rule["optional"]))
                 {
                     if (defaults.size() != 1)
                     {
