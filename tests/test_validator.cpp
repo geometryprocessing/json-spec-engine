@@ -306,26 +306,83 @@ TEST_CASE("simple", "[inject]")
 
     json return_json = sjv.inject_defaults(input,rules); 
 
-    std::cout << return_json << std::endl; 
-
     INFO(return_json);
     REQUIRE(return_json == output);
 }
 
-// TEST_CASE("file_inject", "[inject]")
-// {
-//     std::ifstream ifs1("../data/input_01.json");
-//     json input = json::parse(ifs1);
+TEST_CASE("list", "[inject]")
+{
+    json input = R"( 
+        {
+            "list1": 
+            [
+                {
+                    "count": 0,
+                    "other": 1
+                },
+                {
+                    "count": 0
+                }
+            ]
+        }
+        )"_json;
 
-//     std::ifstream ifs2("../data/rules_01.json");
-//     json rules = json::parse(ifs2);
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["list1"]
+        },
+        {
+            "pointer": "/list1",
+            "type": "list"
+        },
+        {
+            "pointer": "/list1/*",
+            "type": "object",
+            "required": ["count"],
+            "optional": ["other"]
+        },
+        {
+            "pointer": "/list1/*/count",
+            "type": "int"
+        },
+        {
+            "pointer": "/list1/*/other",
+            "type": "int",
+            "default": 2
+        }
+        ]
+        )"_json;
 
-//     sjv::SJV sjv;
+    json output = R"( 
+        {
+            "list1": 
+            [
+                {
+                    "count": 0,
+                    "other": 1
+                },
+                {
+                    "count": 0,
+                    "other": 2
+                }
+            ]
+        }
+        )"_json;
 
-//     sjv.strict = true;
+    sjv::SJV sjv;
 
-//     bool r = sjv.verify_json(input,rules); 
-//     std:: string s = sjv.log2str();
-//     INFO(s);
-//     REQUIRE(r);
-// }
+    sjv.strict = false;
+
+    bool r = sjv.verify_json(input,rules); 
+    std:: string s = sjv.log2str();
+    INFO(s);
+    REQUIRE(r);
+
+    json return_json = sjv.inject_defaults(input,rules); 
+
+    INFO(return_json);
+    REQUIRE(return_json == output);
+}

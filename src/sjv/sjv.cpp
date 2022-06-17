@@ -37,12 +37,23 @@ namespace sjv
                 // If the pointer matches a strict subset of it, add it to the flattened
                 std::tuple<bool, string> subset = is_subset_pointer(e.key(), string(rule["pointer"]));
                 if (std::get<0>(subset))
-                    out_flat[std::get<1>(subset)] = rule["default"];
+                    if (!out_flat.contains(std::get<1>(subset)))
+                        out_flat[std::get<1>(subset)] = rule["default"];
+
+                // Try it also without the last entry to capture object types which are empty
+                string key_parent = e.key().substr(0,e.key().find_last_of("/\\")); 
+  
+                subset = is_subset_pointer(key_parent, string(rule["pointer"]));
+                if (std::get<0>(subset))
+                    if (!out_flat.contains(std::get<1>(subset)))
+                        out_flat[std::get<1>(subset)] = rule["default"];
+                
             }
             // Special case as "/" is not inserted in the flat representation
             std::tuple<bool, string> subset = is_subset_pointer("/", string(rule["pointer"]));
             if (std::get<0>(subset))
-                out_flat[std::get<1>(subset)] = rule["default"];
+                if (!out_flat.contains(std::get<1>(subset)))
+                        out_flat[std::get<1>(subset)] = rule["default"];
         }
 
         // Unflatten the input
@@ -389,7 +400,6 @@ namespace sjv
 
     std::tuple<bool, string> SJV::is_subset_pointer(const string &json, const string &pointer)
     {
-        std::cout << "is_subset_pointer(" << json << "," << pointer << ")" << std::endl;
         // Splits a string into tokens using the deliminator delim
         auto tokenize = [](std::string const &str, const char delim) {
             size_t start;
