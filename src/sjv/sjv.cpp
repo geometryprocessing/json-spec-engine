@@ -151,7 +151,7 @@ namespace sjv
         std::string p_str = cwd + "/" + string(input);
         std::filesystem::path p = std::filesystem::path(p_str);
 
-        if (!std::filesystem::is_regular_file(p))
+        if (!skip_file_check && !std::filesystem::is_regular_file(p))
         {
             log.push_back(log_item("warning", "File not found: " + p_str));
             if (strict)
