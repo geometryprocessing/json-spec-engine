@@ -296,7 +296,7 @@ TEST_CASE("polyfem-data", "[validator]"){
     std::ifstream ifs2("../data/default_rules.json");
     json rules = json::parse(ifs2);
 
-    std::string path("../data/polyfem-data/contact/examples");
+    std::string path("../data/polyfem-data-jsons");
     std::string ext(".json");
     for (auto &p : std::filesystem::recursive_directory_iterator(path))
     {
@@ -311,7 +311,7 @@ TEST_CASE("polyfem-data", "[validator]"){
 
             bool r = sjv.verify_json(input,rules); 
             std:: string s = sjv.log2str();
-            WARN(s);
+            INFO(s);
             REQUIRE(r);
         }
     }

@@ -1,0 +1,99 @@
+{
+    "authen_t1": {
+        "err_h1": 0.010050239102799433,
+        "err_h1_semi": 0.0004508067847403865,
+        "err_l2": 0.010040123468676608,
+        "err_linf": 0.01020198893178893,
+        "err_linf_grad": 0.01020198893178893,
+        "err_lp": 0.01004148346008609,
+        "margin": 1e-08
+    },
+    "geometry": [{
+        "mesh": "../../../meshes/2D/simple/square.obj",
+        "transformation": {
+            "translation": [0, 0],
+            "rotation": -30,
+            "scale": [5, 0.02]
+        },
+        "volume_selection": 1,
+        "surface_selection": 1,
+        "n_refs": 0,
+        "advanced": {
+            "normalize_mesh": false
+        }
+    }, {
+        "mesh": "../../../meshes/2D/simple/square1K.msh",
+        "transformation": {
+            "translation": [0.26, 0.4503],
+            "rotation": -30,
+            "scale": 1
+        },
+        "volume_selection": 2,
+        "surface_selection": 2,
+        "n_refs": 0,
+        "advanced": {
+            "normalize_mesh": false
+        }
+    }],
+    "space": {
+        "discr_order": 1
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 0.001,
+        "friction_coefficient": 0.6
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        },
+        "nonlinear": {
+            "line_search": {
+                "method": "backtracking"
+            },
+            "f_delta": 1e-15,
+            "grad_norm": 1e-5,
+            "max_iterations": 300,
+            "use_grad_norm": true
+        },
+        "contact": {
+            "friction_iterations": 10,
+            "friction_convergence_tol": 0.01,
+            "barrier_stiffness": 1e9,
+            "lagged_damping_weight": 10
+        }
+    },
+    "boundary_conditions": {
+        "rhs": [0, 9.81],
+        "dirichlet_boundary": [{
+            "id": 1,
+            "value": [0, 0]
+        }]
+    },
+    "materials": [{
+        "id": 1,
+        "E": 7e7,
+        "nu": 0.48,
+        "rho": 1240,
+        "type": "NeoHookean"
+    }, {
+        "id": 2,
+        "E": 7e7,
+        "nu": 0.48,
+        "rho": 1240,
+        "type": "NeoHookean"
+    }],
+    "output": {
+        "paraview": {
+            "file_name": "sol.vtu",
+            "options": {
+                "material": true
+            }
+        },
+        "advanced": {
+            "save_solve_sequence_debug": true,
+            "save_time_sequence": false,
+            "save_nl_solve_sequence": false
+        }
+    }
+}
