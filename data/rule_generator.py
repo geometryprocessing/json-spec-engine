@@ -18,7 +18,7 @@ def parse(default:json, prepending = ''):
         if type(v) == dict:
             key = prepending + "/" + k
             tmp = {}
-            tmp["pointers"] = key
+            tmp["pointer"] = key
             tmp['default'] = None
             tmp['type'] = 'object'
             tmp['optional'] = [*v.keys()]

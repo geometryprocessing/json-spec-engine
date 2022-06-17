@@ -818,6 +818,51 @@
         "doc": "//TODO"
     },
     {
+        "pointer":"/boundary_conditions/pressure_boundary/*",
+        "type":"object",
+        "default": null,
+        "required":[
+            "id",
+            "value"
+        ],
+        "optional":[
+            "dimension"
+        ],
+        "doc": "Pressure boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/pressure_boundary/*/id",
+        "type":"int",
+        "doc": "id of Pressure boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/pressure_boundary/*/value",
+        "type":"list",
+        "doc": "values of Pressure boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/pressure_boundary/*/value/*",
+        "type":"string",
+        "doc": "values of Pressure boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/pressure_boundary/*/value/*",
+        "type":"float",
+        "doc": "values of Pressure boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/pressure_boundary/*/dimension",
+        "type":"list",
+        "default": [true, true, true],
+        "doc": "If the dimension is under Pressure boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/pressure_boundary/*/dimension/*",
+        "type":"bool",
+        "default": true,
+        "doc": "If the dimension is under Pressure boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
