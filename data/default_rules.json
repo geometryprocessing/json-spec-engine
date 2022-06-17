@@ -44,7 +44,7 @@
         "type": "object",
         "required": ["mesh"],
         "optional": ["transformation","volume_selection","surface_selection","n_refs","advanced", "enabled", "is_obstacle"],
-        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions and materials."
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object. {DZ: what is n_refs}"
     },
     {
         "pointer": "/geometry/*/mesh",
@@ -62,12 +62,14 @@
     {
         "pointer": "/geometry/*/transformation/translation",
         "type": "list",
-        "default": [0,0,0]
+        "default": null,
+        "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
     },
     {
         "pointer": "/geometry/*/transformation/rotation",
         "type": "list",
-        "default": null
+        "default": null,
+        "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
     },
     {
         "pointer": "/geometry/*/transformation/scale",
@@ -77,13 +79,13 @@
     {
         "pointer": "/geometry/*/transformation/translation/*",
         "type": "float",
-        "default": 0,
-        "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
+        "default": 0
     },
     {
         "pointer": "/geometry/*/transformation/rotation/*",
         "default": 0,
-        "type": "float"
+        "type": "float",
+        "doc": "Rotatation; in 2D, the rotation angle, in 3D, Euler angles, axis+angle, or quaternion "
     },
     {
         "pointer": "/geometry/*/transformation/scale/*",
