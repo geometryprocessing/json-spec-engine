@@ -238,30 +238,12 @@ TEST_CASE("file_01", "[validator]")
     REQUIRE(r);
 }
 
-TEST_CASE("file_02", "[validator]")
-{
-    std::ifstream ifs1("../data/screw.json");
-    json input = json::parse(ifs1);
-
-    std::ifstream ifs2("../data/rules.json");
-    json rules = json::parse(ifs2);
-
-    sjv::SJV sjv;
-
-    sjv.strict = true;
-
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
-    WARN(s);
-    REQUIRE(r);
-}
-
 TEST_CASE("file_03", "[validator]")
 {
     std::ifstream ifs1("../data/push_box.json");
     json input = json::parse(ifs1);
 
-    std::ifstream ifs2("../data/rules.json");
+    std::ifstream ifs2("../data/default_rules.json");
     json rules = json::parse(ifs2);
 
     sjv::SJV sjv;

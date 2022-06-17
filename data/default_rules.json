@@ -1,6 +1,6 @@
 [
     {
-        "pointers": "/",
+        "pointer": "/",
         "type": "object",
         "required": [
             "geometry", 
@@ -21,14 +21,14 @@
         "doc": "Root of the configuration file."
     },
     {
-        "pointers": "/common",
+        "pointer": "/common",
         "default": "",
         "type": "file",
         "extensions":[".json"],
         "doc": "Path to default settings"
     },
     {
-        "pointers": "/root_path",
+        "pointer": "/root_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
@@ -123,8 +123,7 @@
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
-        "type": "int",
-        "default": null
+        "type": "int"
     },
     {
         "pointer": "/geometry/*/surface_selection/*/axis",
@@ -163,7 +162,7 @@
         "default": true
     },
     {
-        "pointers": "/space",
+        "pointer": "/space",
         "default": null,
         "type": "object",
         "optional": [
@@ -175,25 +174,25 @@
         "doc": "Parameters related to space discretization."
     },
     {
-        "pointers": "/space/discr_order",
+        "pointer": "/space/discr_order",
         "default": 1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/pressure_discr_order",
+        "pointer": "/space/pressure_discr_order",
         "default": 1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/use_p_ref",
+        "pointer": "/space/use_p_ref",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced",
+        "pointer": "/space/advanced",
         "default": null,
         "type": "object",
         "optional": [
@@ -215,99 +214,106 @@
         "doc": "Advanced settings for space"
     },
     {
-        "pointers": "/space/advanced/discr_order_max",
+        "pointer": "/space/advanced/discr_order_max",
         "default": 4,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/serendipity",
+        "pointer": "/space/advanced/serendipity",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/isoparametric",
+        "pointer": "/space/advanced/isoparametric",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/use_spline",
+        "pointer": "/space/advanced/use_spline",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/bc_method",
+        "pointer": "/space/advanced/bc_method",
         "default": "lsq",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/n_boundary_samples",
+        "pointer": "/space/advanced/n_boundary_samples",
         "default": -1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/quadrature_order",
+        "pointer": "/space/advanced/quadrature_order",
         "default": -1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/poly_bases",
+        "pointer": "/space/advanced/poly_bases",
         "default": "MFSHarmonic",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/integral_constraints",
+        "pointer": "/space/advanced/integral_constraints",
         "default": 2,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/n_harmonic_samples",
+        "pointer": "/space/advanced/n_harmonic_samples",
         "default": 10,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/force_no_ref_for_harmonic",
+        "pointer": "/space/advanced/force_no_ref_for_harmonic",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/B",
+        "pointer": "/space/advanced/B",
         "default": 3,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/h1_formula",
+        "pointer": "/space/advanced/h1_formula",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/space/advanced/count_flipped_els",
+        "pointer": "/space/advanced/count_flipped_els",
         "default": true,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/time",
+        "pointer": "/time",
         "default": null,
         "type": "object",
         "optional": [
+            "t0",
             "tend", 
             "dt", 
             "time_steps"
         ],
         "doc": "The time parameters"
+    },
+    {
+        "pointer": "/time/t0",
+        "type": "float",
+        "min":0, 
+        "default": 0
     },
     {
         "pointer": "/time/tend",
@@ -328,7 +334,7 @@
         "default": 10
     },
     {
-        "pointers": "/contact",
+        "pointer": "/contact",
         "default": null,
         "type": "object",
         "optional": [
@@ -341,37 +347,37 @@
         "doc": "All the parameters to define contacts like collisions, friction coefficient"
     },
     {
-        "pointers": "/contact/enabled",
+        "pointer": "/contact/enabled",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/contact/dhat",
+        "pointer": "/contact/dhat",
         "default": 0.001,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/contact/dhat_percentage",
+        "pointer": "/contact/dhat_percentage",
         "default": 0.8,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/contact/epsv",
+        "pointer": "/contact/epsv",
         "default": 0.001,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/contact/friction_coefficient",
+        "pointer": "/contact/friction_coefficient",
         "default": 0,
-        "type": "int",
+        "type": "float",
         "doc": "Friction Coefficient"
     },
     {
-        "pointers": "/solver",
+        "pointer": "/solver",
         "default": null,
         "type": "object",
         "optional": [
@@ -385,7 +391,7 @@
         "doc": "The settings for the solver including Linear solver, nonlinear solver, and some advanced options"
     },
     {
-        "pointers": "/solver/linear",
+        "pointer": "/solver/linear",
         "default": null,
         "type": "object",
         "optional": [
@@ -395,19 +401,19 @@
         "doc": "Settings for linear solver"
     },
     {
-        "pointers": "/solver/linear/solver",
+        "pointer": "/solver/linear/solver",
         "default": "",
         "type": "string",
         "doc": "Linear solver type"
     },
     {
-        "pointers": "/solver/linear/precond",
+        "pointer": "/solver/linear/precond",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/nonlinear",
+        "pointer": "/solver/nonlinear",
         "default": null,
         "type": "object",
         "optional": [
@@ -422,43 +428,43 @@
         "doc": "Settings for nonlinear solver"
     },
     {
-        "pointers": "/solver/nonlinear/solver",
+        "pointer": "/solver/nonlinear/solver",
         "default": "newton",
         "type": "string",
         "doc": "Nonlinear solver type"
     },
     {
-        "pointers": "/solver/nonlinear/f_delta",
+        "pointer": "/solver/nonlinear/f_delta",
         "default": 1e-10,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/nonlinear/grad_norm",
+        "pointer": "/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
         "doc": "Grad norm tolerance for the nonlinear solver"
     },
     {
-        "pointers": "/solver/nonlinear/max_iterations",
+        "pointer": "/solver/nonlinear/max_iterations",
         "default": 1000,
         "type": "int",
         "doc": "Maximum iterations of new steps for one timestep"
     },
     {
-        "pointers": "/solver/nonlinear/use_grad_norm",
+        "pointer": "/solver/nonlinear/use_grad_norm",
         "default": true,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/nonlinear/relative_gradient",
+        "pointer": "/solver/nonlinear/relative_gradient",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/nonlinear/line_search",
+        "pointer": "/solver/nonlinear/line_search",
         "default": null,
         "type": "object",
         "optional": [
@@ -468,19 +474,19 @@
         "doc": "Settings for line searcher"
     },
     {
-        "pointers": "/solver/nonlinear/line_search/method",
+        "pointer": "/solver/nonlinear/line_search/method",
         "default": "backtracking",
         "type": "string",
         "doc": "line search type"
     },
     {
-        "pointers": "/solver/nonlinear/line_search/use_grad_norm_tol",
+        "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
         "default": 0.0001,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/augmented_lagrangian",
+        "pointer": "/solver/augmented_lagrangian",
         "default": null,
         "type": "object",
         "optional": [
@@ -491,25 +497,25 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/augmented_lagrangian/initial_weight",
+        "pointer": "/solver/augmented_lagrangian/initial_weight",
         "default": 1000000.0,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/augmented_lagrangian/max_weight",
+        "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 100000000000.0,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/augmented_lagrangian/force",
+        "pointer": "/solver/augmented_lagrangian/force",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/contact",
+        "pointer": "/solver/contact",
         "default": null,
         "type": "object",
         "optional": [
@@ -522,7 +528,7 @@
         "doc": "Settings for solver to handle contacts"
     },
     {
-        "pointers": "/solver/contact/CCD",
+        "pointer": "/solver/contact/CCD",
         "default": null,
         "type": "object",
         "optional": [
@@ -533,55 +539,55 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/contact/CCD/broad_phase",
+        "pointer": "/solver/contact/CCD/broad_phase",
         "default": "hash_grid",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/contact/CCD/tolerance",
+        "pointer": "/solver/contact/CCD/tolerance",
         "default": 1e-06,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/contact/CCD/max_iterations",
+        "pointer": "/solver/contact/CCD/max_iterations",
         "default": 1000000.0,
         "type": "float",
         "doc": "Maximum iterations for continuous collision detection"
     },
     {
-        "pointers": "/solver/contact/friction_iterations",
+        "pointer": "/solver/contact/friction_iterations",
         "default": 1,
         "type": "int",
         "doc": "Maximum iterations to solve frictions"
     },
     {
-        "pointers": "/solver/contact/friction_convergence_tol",
+        "pointer": "/solver/contact/friction_convergence_tol",
         "default": 0.01,
         "type": "float",
         "doc": "Tolerence for friction convergence"
     },
     {
-        "pointers": "/solver/contact/barrier_stiffness",
+        "pointer": "/solver/contact/barrier_stiffness",
         "default": "adaptive",
         "type": "string",
         "doc": "The coefficient of clamped log-barrier function"
     },
     {
-        "pointers": "/solver/contact/lagged_damping_weight",
+        "pointer": "/solver/contact/lagged_damping_weight",
         "default": 0,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/ignore_inertia",
+        "pointer": "/solver/ignore_inertia",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/advanced",
+        "pointer": "/solver/advanced",
         "default": null,
         "type": "object",
         "optional": [
@@ -591,19 +597,19 @@
         "doc": "Advanced settings for the solver"
     },
     {
-        "pointers": "/solver/advanced/cache_size",
+        "pointer": "/solver/advanced/cache_size",
         "default": 900000,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/solver/advanced/lump_mass_matrix",
+        "pointer": "/solver/advanced/lump_mass_matrix",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/materials",
+        "pointer": "/materials",
         "type": "list",
         "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
     },
@@ -656,7 +662,7 @@
         "doc":"//TODO"
     },
     {
-        "pointers": "/boundary_conditions",
+        "pointer": "/boundary_conditions",
         "default": null,
         "type": "object",
         "optional": [
@@ -669,36 +675,34 @@
         "doc": "The settings for boundary conditions"
     },
     {
-        "pointers": "/boundary_conditions/rhs",
-        "default": "//TODO",
+        "pointer": "/boundary_conditions/rhs",
         "type": "float",
         "doc": "Right hand side of the system being solved"
     },
     {
-        "pointers": "/boundary_conditions/rhs",
-        "default": "//TODO",
+        "pointer": "/boundary_conditions/rhs",
         "type": "string",
         "doc": "Right hand side of the system being solved"
     },
     {
-        "pointers": "/boundary_conditions/rhs",
+        "pointer": "/boundary_conditions/rhs",
         "default": "[]",
         "type": "list",
         "doc": "Right hand side of the system being solved"
     },
     {
-        "pointers": "/boundary_conditions/rhs/*",
+        "pointer": "/boundary_conditions/rhs/*",
         "default": 0,
         "type": "float",
         "doc": "Right hand side of the system being solved"
     },
     {
-        "pointers": "/boundary_conditions/rhs/*",
+        "pointer": "/boundary_conditions/rhs/*",
         "type": "string",
         "doc": "Right hand side of the system being solved"
     },
     {
-        "pointers": "/boundary_conditions/dirichlet_boundary",
+        "pointer": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
         "doc": "The list of dirichlet boundary condition describing the displacement"
@@ -749,7 +753,7 @@
         "doc": "If the dimension is under dirichlet boundary condition"
     },
     {
-        "pointers": "/boundary_conditions/neumann_boundary",
+        "pointer": "/boundary_conditions/neumann_boundary",
         "default": [],
         "type": "list",
         "doc": "The list of neumann boundary condition describing the forces"
@@ -808,16 +812,16 @@
         "doc": "If the dimension is under neumann boundary condition"
     },
     {
-        "pointers": "/boundary_conditions/pressure_boundary",
+        "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
         "doc": "//TODO"
     },
     {
-        "pointers": "/boundary_conditions/obstacle_displacements",
+        "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
-        "The list of obstacle displacements"
+        "doc": "The list of obstacle displacements"
     },
     {
         "pointer":"/boundary_conditions/obstacle_displacements/*",
@@ -852,7 +856,7 @@
 
 
     {
-        "pointers": "/initial_conditions",
+        "pointer": "/initial_conditions",
         "default": null,
         "type": "object",
         "optional": [
@@ -863,25 +867,25 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/initial_conditions/solution",
+        "pointer": "/initial_conditions/solution",
         "default": null,
         "type": "object",
         "doc": "//TODO"
     },
     {
-        "pointers": "/initial_conditions/velocity",
+        "pointer": "/initial_conditions/velocity",
         "default": null,
         "type": "object",
         "doc": "//TODO"
     },
     {
-        "pointers": "/initial_conditions/acceleration",
+        "pointer": "/initial_conditions/acceleration",
         "default": null,
         "type": "object",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output",
+        "pointer": "/output",
         "default": null,
         "type": "object",
         "optional": [
@@ -893,13 +897,13 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/json",
+        "pointer": "/output/json",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview",
+        "pointer": "/output/paraview",
         "default": null,
         "type": "object",
         "optional": [
@@ -916,49 +920,49 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/file_name",
+        "pointer": "/output/paraview/file_name",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/vismesh_rel_area",
+        "pointer": "/output/paraview/vismesh_rel_area",
         "default": 1e-05,
         "type": "float",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/skip_frame",
+        "pointer": "/output/paraview/skip_frame",
         "default": 1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/high_order_mesh",
+        "pointer": "/output/paraview/high_order_mesh",
         "default": true,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/volume",
+        "pointer": "/output/paraview/volume",
         "default": true,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/surface",
+        "pointer": "/output/paraview/surface",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/wireframe",
+        "pointer": "/output/paraview/wireframe",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options",
+        "pointer": "/output/paraview/options",
         "default": null,
         "type": "object",
         "optional": [
@@ -972,43 +976,43 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options/material",
+        "pointer": "/output/paraview/options/material",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options/body_ids",
+        "pointer": "/output/paraview/options/body_ids",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options/contact_forces",
+        "pointer": "/output/paraview/options/contact_forces",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options/friction_forces",
+        "pointer": "/output/paraview/options/friction_forces",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options/velocity",
+        "pointer": "/output/paraview/options/velocity",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/options/acceleration",
+        "pointer": "/output/paraview/options/acceleration",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/reference",
+        "pointer": "/output/paraview/reference",
         "default": null,
         "type": "object",
         "optional": [
@@ -1018,19 +1022,19 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/reference/solution",
+        "pointer": "/output/paraview/reference/solution",
         "default": null,
         "type": "object",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/paraview/reference/gradient",
+        "pointer": "/output/paraview/reference/gradient",
         "default": null,
         "type": "object",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data",
+        "pointer": "/output/data",
         "default": null,
         "type": "object",
         "optional": [
@@ -1048,67 +1052,67 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/solution",
+        "pointer": "/output/data/solution",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/full_mat",
+        "pointer": "/output/data/full_mat",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/stiffness_mat",
+        "pointer": "/output/data/stiffness_mat",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/solution_mat",
+        "pointer": "/output/data/solution_mat",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/stress_mat",
+        "pointer": "/output/data/stress_mat",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/u_path",
+        "pointer": "/output/data/u_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/v_path",
+        "pointer": "/output/data/v_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/a_path",
+        "pointer": "/output/data/a_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/mises",
+        "pointer": "/output/data/mises",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/data/nodes",
+        "pointer": "/output/data/nodes",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced",
+        "pointer": "/output/advanced",
         "default": null,
         "type": "object",
         "optional": [
@@ -1126,67 +1130,67 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/timestep_prefix",
+        "pointer": "/output/advanced/timestep_prefix",
         "default": "step_",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/sol_on_grid",
+        "pointer": "/output/advanced/sol_on_grid",
         "default": -1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/compute_error",
+        "pointer": "/output/advanced/compute_error",
         "default": true,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/sol_at_node",
+        "pointer": "/output/advanced/sol_at_node",
         "default": -1,
         "type": "int",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/vis_boundary_only",
+        "pointer": "/output/advanced/vis_boundary_only",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/curved_mesh_size",
+        "pointer": "/output/advanced/curved_mesh_size",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/save_solve_sequence_debug",
+        "pointer": "/output/advanced/save_solve_sequence_debug",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/save_time_sequence",
+        "pointer": "/output/advanced/save_time_sequence",
         "default": true,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/save_nl_solve_sequence",
+        "pointer": "/output/advanced/save_nl_solve_sequence",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/output/advanced/spectrum",
+        "pointer": "/output/advanced/spectrum",
         "default": false,
         "type": "bool",
         "doc": "//TODO"
     },
     {
-        "pointers": "/input",
+        "pointer": "/input",
         "default": null,
         "type": "object",
         "optional": [
@@ -1195,7 +1199,7 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/input/data",
+        "pointer": "/input/data",
         "default": null,
         "type": "object",
         "optional": [
@@ -1206,19 +1210,19 @@
         "doc": "//TODO"
     },
     {
-        "pointers": "/input/data/u_path",
+        "pointer": "/input/data/u_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/input/data/v_path",
+        "pointer": "/input/data/v_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
     },
     {
-        "pointers": "/input/data/a_path",
+        "pointer": "/input/data/a_path",
         "default": "",
         "type": "string",
         "doc": "//TODO"
