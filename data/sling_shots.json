@@ -1,0 +1,212 @@
+{
+    "geometry": [
+        {
+            "mesh": "../data/vol_mesh/mat.msh",
+            "transformation": {
+                "translation": [
+                    0.018,
+                    0.115,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    90
+                ],
+                "scale": [
+                    0.00385,
+                    0.01,
+                    0.21
+                ]
+            },
+            "volume_selection": 1,
+            "advanced": {
+                "normalize_mesh": false
+            },
+            "surface_selection": [
+                {
+                    "id": 3,
+                    "axis": -3,
+                    "position": -0.1
+                },
+                {
+                    "id": 3,
+                    "axis": 3,
+                    "position": 0.1
+                }
+            ]
+        },
+        {
+            "mesh": "../data/vol_mesh/sphere_grooved.msh",
+            "transformation": {
+                "translation": [
+                    0,
+                    0.115,
+                    0
+                ],
+                "rotation": [
+                    90,
+                    0,
+                    0
+                ],
+                "scale": 0.0386
+            },
+            "volume_selection": 2,
+            "advanced": {
+                "normalize_mesh": false
+            },
+            "surface_selection": [
+                {
+                    "id": 3,
+                    "axis": -3,
+                    "position": -0.1
+                },
+                {
+                    "id": 3,
+                    "axis": 3,
+                    "position": 0.1
+                }
+            ]
+        },
+        {
+            "mesh": "../data/surf_mesh/left_finger.obj",
+            "is_obstacle": true,
+            "enabled": true,
+            "transformation": {
+                "translation": [
+                    0.04,
+                    0.16032,
+                    0.0
+                ],
+                "rotation": [
+                    0,
+                    -90,
+                    0
+                ],
+                "scale": 1
+            },
+            "surface_selection": 1000
+        },
+        {
+            "mesh": "../data/surf_mesh/right_finger.obj",
+            "is_obstacle": true,
+            "enabled": true,
+            "transformation": {
+                "translation": [
+                    0.04,
+                    0.06965,
+                    0.0
+                ],
+                "rotation": [
+                    0,
+                    -90,
+                    0
+                ],
+                "scale": 1
+            },
+            "surface_selection": 1001
+        }
+    ],
+    "boundary_conditions": {
+        "obstacle_displacements": [
+            {
+                "id": 1000,
+                "value": [
+                    "0",
+                    "-0.02 * t",
+                    "0"
+                ]
+            },
+            {
+                "id": 1001,
+                "value": [
+                    "0",
+                    "0.02 * t",
+                    "0"
+                ]
+            }
+        ],
+        "rhs": [
+            0,
+            9.81,
+            0
+        ],
+        "dirichlet_boundary": [
+            {
+                "id": 3,
+                "value": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    "space": {
+        "advanced": {
+            "bc_method": "sample",
+            "quadrature_order": -1
+        }
+    },
+    "time": {
+        "t0": 0,
+        "dt": 0.01,
+        "time_steps": 50
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 1e-05,
+        "friction_coefficient": 0.8
+    },
+    "solver": {
+        "linear": {
+            "solver": "Eigen::CholmodSupernodalLLT"
+        },
+        "nonlinear": {
+            "line_search": {
+                "method": "backtracking"
+            },
+            "grad_norm": 1e-06,
+            "use_grad_norm": false
+        },
+        "augmented_lagrangian": {
+            "max_weight": 1e+30
+        },
+        "contact": {
+            "friction_iterations": 100,
+            "CCD": {
+                "broad_phase": "STQ"
+            }
+        }
+    },
+    "materials": [
+        {
+            "id": 2,
+            "E": 10000000.0,
+            "nu": 0.4,
+            "rho": 1150,
+            "type": "NeoHookean"
+        },
+        {
+            "id": 1,
+            "E": 10000000.0,
+            "nu": 0.4,
+            "rho": 1150,
+            "type": "NeoHookean"
+        }
+    ],
+    "output": {
+        "paraview": {
+            "file_name": "sim.pvd",
+            "options": {
+                "material": true,
+                "body_ids": true
+            },
+            "vismesh_rel_area": 10000000
+        },
+        "advanced": {
+            "save_solve_sequence_debug": false,
+            "save_time_sequence": true
+        }
+    }
+}
