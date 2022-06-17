@@ -120,24 +120,25 @@
         "pointer": "/geometry/*/transformation/translation",
         "type": "list",
         "default": null,
-        "doc": "Translation vector (2 entries for 2D problems, 3 entries for 3D problems)."
+        "doc": "Translate, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
         "pointer": "/geometry/*/transformation/rotation",
         "type": "list",
         "default": [],
-        "doc": "Rotatation; in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion."
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D,  three or four Euler angles, axis+angle, or a unit quaternion."
     },
     {
         "pointer": "/geometry/*/transformation/scale",
         "type": "list",
         "default": [],
-        "doc": "Scaling along axes (2 entries for 2D problems, 3 entries for 3D problems)."
+        "doc": "Scale by specified factors along axes, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
         "pointer": "/geometry/*/transformation/dimensions",
         "type": "list",
-        "default": []
+        "default": [],
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems. "
     },
     {
         "pointer": "/geometry/*/transformation/dimensions/*",
@@ -162,26 +163,31 @@
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "int",
-        "default": 0
+        "default": 0,
+        "doc": "Assign specified id to all volume elements of the geometry"
     },
     {
         "pointer": "/geometry/*/volume_selection",
         "type": "file",
-        "extensions": [".txt"]
+        "extensions": [".txt"],
+        "doc": "Load ids from a file; the file is required to have one id per volume element of the geometry"
     },
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "int",
-        "default": 0
+        "default": 0,
+        "doc": "Assign specified id to all surface elements of the geometry"
     },
     {
         "pointer": "/geometry/*/surface_selection",
-        "type": "list"
+        "type": "list",
+        "doc": "List of selection (id assignment) operations to apply to the geometry; operations can be box,sphere, "
     }, 
     {
         "pointer": "/geometry/*/surface_selection",
         "type": "file",
-        "extensions": [".txt"]
+        "extensions": [".txt"],
+        "doc": "Load ids from a file; the file has a list of surface elements of the geometry specified as triples of vertex indices, with one id for each; each triple must correspond to a surface element"
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -189,7 +195,8 @@
         "required":["id","box"],
         "optional":["relative"],
         "default": null,
-        "typename": "box"
+        "typename": "box", 
+        "doc": "Assign the id to all surface elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -197,7 +204,9 @@
         "required":["id","radius", "center"],
         "optional":["relative"],
         "default": null,
-        "typename": "sphere"
+        "typename": "sphere",
+        "doc": "Assign the id to all surface elements with barycenters inside an sphere with specified center nad radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
@@ -205,14 +214,17 @@
         "required":["id","point", "normal"],
         "optional":["relative", "offset"],
         "default": null,
-        "typename": "plane"
+        "typename": "plane",
+        "doc": "{DZ TODO: change name to halfspace}. Assign the id to all surface elements with barycenters in a halfspace. The halfspace boundary plane is  defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates coordinates with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/geometry/*/surface_selection/*",
         "type": "object",
         "required":["id", "axis", "position"],
+        "optional":["relative"],
         "default": null,
-        "typename": "axis"
+        "typename": "axis",
+        "doc": "{DZ TODO: change name to axis_aligned_halfspace, rename position to offset} Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
     },
     {
         "pointer": "/geometry/*/surface_selection/*/id",
@@ -296,7 +308,8 @@
         "pointer": "/geometry/*/advanced",
         "type": "object",
         "optional": ["normalize_mesh"],
-        "default": null
+        "default": null,
+        "doc": "Nonuniformly rescale the  mesh along each axis, so that the bounding box becomes [0,1]^3"
     },
     {
         "pointer": "/geometry/*/advanced/normalize_mesh",
@@ -306,7 +319,8 @@
     {
         "pointer": "/geometry/*/is_obstacle",
         "type": "bool",
-        "default": false
+        "default": false,
+        "doc": "The geometry elements are not included in deforming geometry, only in collision computations"
     },
     {
         "pointer": "/geometry/*/enabled",
@@ -323,25 +337,25 @@
             "use_p_ref",
             "advanced"
         ],
-        "doc": "Parameters related to space discretization."
+        "doc": "{DZ TODO: rename space to FEspace?} Options related to the FE space."
     },
     {
         "pointer": "/space/discr_order",
         "default": 1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: RENAME order->degree two more versions: load per element orders from file and list of ids to assign an order to} Lagrange element order for the space for the main unknown,for all elements."
     },
     {
         "pointer": "/space/pressure_discr_order",
         "default": 1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: two more versions: load per element orders from file and list of ids to assign an order to} Lagrange element order for the space for the pressure unknown,for all elements." 
     },
     {
         "pointer": "/space/use_p_ref",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Perform a priori p-refinement based on element shape, as described in 'Decoupling..' paper."
     },
     {
         "pointer": "/space/advanced",
@@ -363,85 +377,85 @@
             "h1_formula",
             "count_flipped_els"
         ],
-        "doc": "Advanced settings for space"
+        "doc": "Advanced settings for the FE space."
     },
     {
         "pointer": "/space/advanced/discr_order_max",
         "default": 4,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Maximal discretization order in adaptive p-refinement and hp-refinement"
     },
     {
         "pointer": "/space/advanced/serendipity",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Use serendipity elements for quad/hex elements of degree 2."
     },
     {
         "pointer": "/space/advanced/isoparametric",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
     },
     {
         "pointer": "/space/advanced/use_spline",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "Use bi/triquadratic spline basis for quad/hex elements not adjacent to polyhedral elements, see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/bc_method",
         "default": "lsq",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Method for imposing analytic Dirichet boundary conditions. If 'lsq' (least-squares fit), then the bc function is sampled at quadrature points, and the FEspace nodal values on the boundary are determined by minimizing L2 norm of the difference. If 'sample', then the analytic bc function is sampled at the boundary nodes."
     },
     {
         "pointer": "/space/advanced/n_boundary_samples",
         "default": -1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Per-element number of boundary samples for analytic Dirichlet and Neumann boundary conditions."
     },
     {
         "pointer": "/space/advanced/quadrature_order",
         "default": -1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: rename min_quadrature_order} Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*p+1,quadrature_order."
     },
     {
         "pointer": "/space/advanced/poly_bases",
         "default": "MFSHarmonic",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/integral_constraints",
         "default": 2,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Number of constraints for non-conforming polygonal basis;  0, 1, or 2; see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/n_harmonic_samples",
         "default": 10,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "If MFSHarmonics is used for a polygonal element, number of collocation samples used in the basis construction;see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/force_no_ref_for_harmonic",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, do not do uniform global refinement if the mesh contains polygonal elements."
     },
     {
         "pointer": "/space/advanced/B",
         "default": 3,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "{DZ TODO more meaningful name} The target deviation of the error on elements from perfect element error, for a priori geometry-dependent p-refinement, see 'Decoupling .. ' paper."
     },
     {
         "pointer": "/space/advanced/h1_formula",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: get rid of this and remove from the code}"
     },
     {
         "pointer": "/space/advanced/count_flipped_els",
