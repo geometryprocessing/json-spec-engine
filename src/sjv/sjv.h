@@ -39,7 +39,7 @@ namespace sjv
 
         // if strict == false, a json is valid even if it has entries not validated by a rule
         bool strict = false;
-
+        bool skip_file_check = true;
         // automatic boxing for primitive types
         // if all rules fail for a basic type, try boxing it once and try again
         bool boxing_primitive = true;

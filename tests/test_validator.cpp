@@ -291,3 +291,28 @@ TEST_CASE("slingshot", "[validator]")
     WARN(s);
     REQUIRE(r);
 }
+
+TEST_CASE("polyfem-data", "[validator]"){
+    std::ifstream ifs2("../data/default_rules.json");
+    json rules = json::parse(ifs2);
+
+    std::string path("../data/polyfem-data/contact/examples");
+    std::string ext(".json");
+    for (auto &p : std::filesystem::recursive_directory_iterator(path))
+    {
+        if (p.path().extension() == ext){
+            if(p.path().stem().string()=="common") continue;
+            INFO(p.path().string());
+            std::ifstream ifs1(p.path().string());
+            json input = json::parse(ifs1);
+            sjv::SJV sjv;
+
+            sjv.strict = true;
+
+            bool r = sjv.verify_json(input,rules); 
+            std:: string s = sjv.log2str();
+            WARN(s);
+            REQUIRE(r);
+        }
+    }
+}
