@@ -126,7 +126,7 @@ TEST_CASE("file_type", "[validator]")
 
     sjv.cwd = std::filesystem::current_path();
     sjv.strict = true;
-
+    sjv.skip_file_check = false;
     b = sjv.verify_json(input,rules);
     
     INFO(sjv.log2str());
