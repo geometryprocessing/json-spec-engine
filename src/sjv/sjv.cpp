@@ -35,10 +35,14 @@ namespace sjv
             for (auto e : flat.items())
             {
                 // If the pointer matches a strict subset of it, add it to the flattened
-                std::tuple<bool, string> subset = is_subset_pointer(string(rule["pointer"]), e.key());
+                std::tuple<bool, string> subset = is_subset_pointer(e.key(), string(rule["pointer"]));
                 if (std::get<0>(subset))
                     out_flat[std::get<1>(subset)] = rule["default"];
             }
+            // Special case as "/" is not inserted in the flat representation
+            std::tuple<bool, string> subset = is_subset_pointer("/", string(rule["pointer"]));
+            if (std::get<0>(subset))
+                out_flat[std::get<1>(subset)] = rule["default"];
         }
 
         // Unflatten the input
@@ -76,6 +80,8 @@ namespace sjv
 
             if (strict)
                 return false;
+            else
+                return true;
         }
 
         // Test all rules, only one must pass, otherwise throw exception
@@ -85,7 +91,7 @@ namespace sjv
             if (verify_rule(input, i))
                 count++;
 
-        if (count == 0 && !matching_rules.empty())
+        if (count == 0 && !matching_rules.empty()) 
         {
             // Before giving up, try boxing a primitive type
             if (boxing_primitive && !input.is_array())
@@ -383,7 +389,7 @@ namespace sjv
 
     std::tuple<bool, string> SJV::is_subset_pointer(const string &json, const string &pointer)
     {
-
+        std::cout << "is_subset_pointer(" << json << "," << pointer << ")" << std::endl;
         // Splits a string into tokens using the deliminator delim
         auto tokenize = [](std::string const &str, const char delim) {
             size_t start;
@@ -427,25 +433,31 @@ namespace sjv
             || (pointer_t.size() == 0))
             return {false, ""};
 
-        std::string buf = "/";
+        std::string buf = "";
         // if it is shorter, match every entry
         for (unsigned i = 0; i < pointer_t.size(); ++i)
         {
             // if there is no corresponding entry on json, copy and move on
-            if (json_t.size() < i)
-                buf.append(replace_all(pointer_t[i], "*", "0") + "/");
-
+            if (json_t.size() <= i)
+            {
+                buf.append("/" + replace_all(pointer_t[i], "*", "0"));
+            }
             // if there is an entry on json and it is the same, move on
-            if (json_t[i] == pointer_t[i])
-                buf.append(pointer_t[i] + "/");
-
+            else if (json_t[i] == pointer_t[i])
+            {
+                buf.append("/" + pointer_t[i]);
+            }
             // if the pointer contains a star, then accept any integer on json
-            if (pointer_t[i] == "*")
+            else if (pointer_t[i] == "*")
+            {
                 if (is_number(json_t[i]))
-                    buf.append(json_t[i] + "/");
-
+                    buf.append("/" + json_t[i]);
+            }
             // if no rule matches it is not a match
-            return {false, ""};
+            else
+            {
+                return {false, ""};
+            }
         }
 
         return {true, buf};

@@ -236,3 +236,96 @@ TEST_CASE("file_01", "[validator]")
     INFO(s);
     REQUIRE(r);
 }
+
+TEST_CASE("simple", "[inject]")
+{
+    json input = R"( 
+        {
+            "string1": "teststring",
+            "geometry": 
+            {
+                "nested": 3
+            }
+        }
+        )"_json;
+
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["string1"],
+            "optional":["geometry","other"]
+        },
+        {
+            "pointer": "/geometry",
+            "type": "object",
+            "default": null,
+            "optional": ["nested"]
+        },
+        {
+            "pointer": "/geometry/nested",
+            "type": "int",
+            "default": 3
+        },
+        {
+            "pointer": "/other",
+            "type": "int",
+            "default": null
+        },
+        {
+            "pointer": "/other/nested",
+            "type": "int",
+            "default": 3
+        }
+        ]
+        )"_json;
+
+    json output = R"( 
+        {
+            "string1": "teststring",
+            "geometry": 
+            {
+                "nested": 3
+            },
+            "other": 
+            {
+                "nested": 3
+            }
+        }
+        )"_json;
+
+    sjv::SJV sjv;
+
+    sjv.strict = false;
+
+    bool r = sjv.verify_json(input,rules); 
+    std:: string s = sjv.log2str();
+    INFO(s);
+    REQUIRE(r);
+
+    json return_json = sjv.inject_defaults(input,rules); 
+
+    std::cout << return_json << std::endl; 
+
+    INFO(return_json);
+    REQUIRE(return_json == output);
+}
+
+// TEST_CASE("file_inject", "[inject]")
+// {
+//     std::ifstream ifs1("../data/input_01.json");
+//     json input = json::parse(ifs1);
+
+//     std::ifstream ifs2("../data/rules_01.json");
+//     json rules = json::parse(ifs2);
+
+//     sjv::SJV sjv;
+
+//     sjv.strict = true;
+
+//     bool r = sjv.verify_json(input,rules); 
+//     std:: string s = sjv.log2str();
+//     INFO(s);
+//     REQUIRE(r);
+// }

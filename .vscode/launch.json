@@ -6,7 +6,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "/home/daniele/git/simple-json-validator/build/tests/unit_tests",
-        "args": ["type_string"],
+        "args": ["simple"],
         "stopAtEntry": false,
         "cwd": "/home/daniele/git/simple-json-validator/build/",
         "environment": [],
