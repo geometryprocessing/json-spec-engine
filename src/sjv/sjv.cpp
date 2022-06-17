@@ -3,15 +3,80 @@
 #include <iostream>
 #include <filesystem> // C++17
 #include <sstream>
+#include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace sjv
 {
+
+    //////////// PUBLIC
+
     bool SJV::verify_json(const json &input, const json &rules)
     {
         log.clear();
         return verify_json("/", input, rules);
-    }
+    };
+
+    json SJV::inject_defaults(const json &input, const json &rules)
+    {
+        // The code below assumes that the input satisfies the rules
+        assert(verify_json(input, rules));
+
+        // Find all the default rules
+        json default_rules = collect_default_rules(rules);
+
+        // Flatten the input
+        json flat = input.flatten();
+        json out_flat = flat;
+
+        // For each rule, go over all entries of a flattened input
+        for (auto rule : default_rules)
+        {
+            for (auto e : flat.items())
+            {
+                // If the pointer matches a strict subset of it, add it to the flattened
+                std::tuple<bool, string> subset = is_subset_pointer(e.key(), string(rule["pointer"]));
+                if (std::get<0>(subset))
+                    if (!out_flat.contains(std::get<1>(subset)))
+                        out_flat[std::get<1>(subset)] = rule["default"];
+
+                // Try it also without the last entry to capture object types which are empty
+                string key_parent = e.key().substr(0,e.key().find_last_of("/\\")); 
+  
+                subset = is_subset_pointer(key_parent, string(rule["pointer"]));
+                if (std::get<0>(subset))
+                    if (!out_flat.contains(std::get<1>(subset)))
+                        out_flat[std::get<1>(subset)] = rule["default"];
+                
+            }
+            // Special case as "/" is not inserted in the flat representation
+            std::tuple<bool, string> subset = is_subset_pointer("/", string(rule["pointer"]));
+            if (std::get<0>(subset))
+                if (!out_flat.contains(std::get<1>(subset)))
+                        out_flat[std::get<1>(subset)] = rule["default"];
+        }
+
+        // Unflatten the input
+        json output = out_flat.unflatten();
+
+        // Certify the validity of the final file
+        assert(verify_json(input, rules));
+
+        return output;
+    };
+
+    std::string SJV::log2str()
+    {
+        std::stringstream s;
+
+        for (log_item i : log)
+        {
+            s << i.first << ": " << i.second << std::endl;
+        }
+        return s.str();
+    };
+
+    //////////// PRIVATE
 
     bool SJV::verify_json(const string &pointer, const json &input, const json &rules)
     {
@@ -26,6 +91,8 @@ namespace sjv
 
             if (strict)
                 return false;
+            else
+                return true;
         }
 
         // Test all rules, only one must pass, otherwise throw exception
@@ -35,7 +102,7 @@ namespace sjv
             if (verify_rule(input, i))
                 count++;
 
-        if (count == 0 && !matching_rules.empty())
+        if (count == 0 && !matching_rules.empty()) 
         {
             // Before giving up, try boxing a primitive type
             if (boxing_primitive && !input.is_array())
@@ -44,7 +111,7 @@ namespace sjv
                 // Make sure there are some rules for the boxed version before recursively checking
                 if (collect_pointer(new_pointer, rules).size() > 0)
                     if (verify_json(new_pointer, input, rules))
-                      return true;
+                        return true;
             }
 
             std::stringstream s;
@@ -274,17 +341,21 @@ namespace sjv
             return false;
 
         return true;
-    }
+    };
 
-    std::string SJV::log2str()
+    json SJV::collect_default_rules(const json &rules)
     {
-        std::stringstream s;
+        // Find all rules that apply for the input node
+        // TODO: accelerate this
 
-        for (log_item i : log)
+        std::vector<json> matching_rules;
+        for (auto i : rules)
         {
-            s << i.first << ": " << i.second << std::endl;
+            if (i.contains("default"))
+                matching_rules.push_back(i);
         }
-        return s.str();
+
+        return matching_rules;
     };
 
     json SJV::collect_default_rules(const string &pointer, const json &rules)
@@ -307,7 +378,7 @@ namespace sjv
         return std::find(list.begin(), list.end(), item) != list.end();
     };
 
-    std::vector<json> SJV::collect_pointer(const string& pointer, const json& rules)
+    std::vector<json> SJV::collect_pointer(const string &pointer, const json &rules)
     {
         std::vector<json> matching_rules;
         for (auto i : rules)
@@ -317,4 +388,89 @@ namespace sjv
         }
         return matching_rules;
     };
+
+    json SJV::find_valid_rule(const string &pointer, const json &input, const json &rules)
+    {
+        for (auto i : collect_pointer(pointer, rules))
+            if (verify_rule(input, i))
+                return i;
+
+        return json();
+    };
+
+    std::tuple<bool, string> SJV::is_subset_pointer(const string &json, const string &pointer)
+    {
+        // Splits a string into tokens using the deliminator delim
+        auto tokenize = [](std::string const &str, const char delim) {
+            size_t start;
+            size_t end = 0;
+            std::vector<string> out;
+
+            while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
+            {
+                end = str.find(delim, start);
+                out.push_back(str.substr(start, end - start));
+            }
+
+            return out;
+        };
+
+        // Replaces occurrences of a substring
+        auto replace_all = [](std::string str, const std::string &from, const std::string &to) {
+            size_t start_pos = 0;
+            while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+            {
+                str.replace(start_pos, from.length(), to);
+                start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+            }
+            return str;
+        };
+
+        // Check if a string is an integer
+        auto is_number = [](const string &str) {
+            for (char const &c : str)
+                if (std::isdigit(c) == 0)
+                    return false;
+            return true;
+        };
+
+        // Tokenize json_pointer
+        std::vector<string> json_t = tokenize(json, '/');
+        std::vector<string> pointer_t = tokenize(pointer, '/');
+
+        // if the json is not shorter or if there are no tokens, give up
+        if ((json_t.size() >= pointer_t.size())
+            || (pointer_t.size() == 0))
+            return {false, ""};
+
+        std::string buf = "";
+        // if it is shorter, match every entry
+        for (unsigned i = 0; i < pointer_t.size(); ++i)
+        {
+            // if there is no corresponding entry on json, copy and move on
+            if (json_t.size() <= i)
+            {
+                buf.append("/" + replace_all(pointer_t[i], "*", "0"));
+            }
+            // if there is an entry on json and it is the same, move on
+            else if (json_t[i] == pointer_t[i])
+            {
+                buf.append("/" + pointer_t[i]);
+            }
+            // if the pointer contains a star, then accept any integer on json
+            else if (pointer_t[i] == "*")
+            {
+                if (is_number(json_t[i]))
+                    buf.append("/" + json_t[i]);
+            }
+            // if no rule matches it is not a match
+            else
+            {
+                return {false, ""};
+            }
+        }
+
+        return {true, buf};
+    };
+
 } // namespace sjv
