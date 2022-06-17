@@ -419,13 +419,13 @@
             "relative_gradient",
             "line_search"
         ],
-        "doc": "//TODO"
+        "doc": "Settings for nonlinear solver"
     },
     {
         "pointers": "/solver/nonlinear/solver",
         "default": "newton",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Nonlinear solver type"
     },
     {
         "pointers": "/solver/nonlinear/f_delta",
@@ -437,13 +437,13 @@
         "pointers": "/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "Grad norm tolerance for the nonlinear solver"
     },
     {
         "pointers": "/solver/nonlinear/max_iterations",
         "default": 1000,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Maximum iterations of new steps for one timestep"
     },
     {
         "pointers": "/solver/nonlinear/use_grad_norm",
@@ -465,13 +465,13 @@
             "method",
             "use_grad_norm_tol"
         ],
-        "doc": "//TODO"
+        "doc": "Settings for line searcher"
     },
     {
         "pointers": "/solver/nonlinear/line_search/method",
         "default": "backtracking",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "line search type"
     },
     {
         "pointers": "/solver/nonlinear/line_search/use_grad_norm_tol",
@@ -519,7 +519,7 @@
             "barrier_stiffness",
             "lagged_damping_weight"
         ],
-        "doc": "//TODO"
+        "doc": "Settings for solver to handle contacts"
     },
     {
         "pointers": "/solver/contact/CCD",
@@ -548,25 +548,25 @@
         "pointers": "/solver/contact/CCD/max_iterations",
         "default": 1000000.0,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "Maximum iterations for continuous collision detection"
     },
     {
         "pointers": "/solver/contact/friction_iterations",
         "default": 1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Maximum iterations to solve frictions"
     },
     {
         "pointers": "/solver/contact/friction_convergence_tol",
         "default": 0.01,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "Tolerence for friction convergence"
     },
     {
         "pointers": "/solver/contact/barrier_stiffness",
         "default": "adaptive",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "The coefficient of clamped log-barrier function"
     },
     {
         "pointers": "/solver/contact/lagged_damping_weight",
@@ -588,7 +588,7 @@
             "cache_size",
             "lump_mass_matrix"
         ],
-        "doc": "//TODO"
+        "doc": "Advanced settings for the solver"
     },
     {
         "pointers": "/solver/advanced/cache_size",
@@ -604,9 +604,56 @@
     },
     {
         "pointers": "/materials",
-        "default": null,
+        "type": "list",
+        "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*",
         "type": "object",
-        "doc": "//TODO"
+        "required":["type"],
+        "optional": ["id", "E", "nu", "rho", "mu", "lambda"],
+        "doc": "Material Parameters including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+    },
+    {
+        "pointer": "/materials/*/id",
+        "type":"int",
+        "default": "all",
+        "doc":"id"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type":"float",
+        "default":"//TODO",
+        "doc":"Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
+        "type":"float",
+        "default":"//TODO",
+        "doc":"Poisson ratio"
+    },
+    {
+        "pointer": "/materials/*/rho",
+        "type":"float",
+        "default":"//TODO",
+        "doc":"Density"
+    },
+    {
+        "pointer": "/materials/*/type",
+        "type":"string",
+        "doc":"Type of material"
+    },
+    {
+        "pointer": "/materials/*/mu",
+        "type":"float",
+        "default":"//TODO",
+        "doc":"//TODO"
+    },
+    {
+        "pointer": "/materials/*/lambda",
+        "type":"float",
+        "default":"//TODO",
+        "doc":"//TODO"
     },
     {
         "pointers": "/boundary_conditions",
@@ -619,25 +666,146 @@
             "pressure_boundary",
             "obstacle_displacements"
         ],
-        "doc": "//TODO"
+        "doc": "The settings for boundary conditions"
     },
     {
         "pointers": "/boundary_conditions/rhs",
-        "default": null,
-        "type": "object",
-        "doc": "//TODO"
+        "default": "//TODO",
+        "type": "float",
+        "doc": "Right hand side of the system being solved"
+    },
+    {
+        "pointers": "/boundary_conditions/rhs",
+        "default": "//TODO",
+        "type": "string",
+        "doc": "Right hand side of the system being solved"
+    },
+    {
+        "pointers": "/boundary_conditions/rhs",
+        "default": "[]",
+        "type": "list",
+        "doc": "Right hand side of the system being solved"
+    },
+    {
+        "pointers": "/boundary_conditions/rhs/*",
+        "default": 0,
+        "type": "float",
+        "doc": "Right hand side of the system being solved"
+    },
+    {
+        "pointers": "/boundary_conditions/rhs/*",
+        "type": "string",
+        "doc": "Right hand side of the system being solved"
     },
     {
         "pointers": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "The list of dirichlet boundary condition describing the displacement"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*",
+        "type":"object",
+        "default": null,
+        "required":[
+            "id",
+            "value"
+        ],
+        "optional":[
+            "dimension"
+        ],
+        "doc": "Dirichlet boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*/id",
+        "type":"int",
+        "doc": "id of Dirichlet boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*/value",
+        "type":"list",
+        "doc": "values of Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type":"string",
+        "doc": "values of Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type":"float",
+        "doc": "values of Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*/dimension",
+        "type":"list",
+        "default": [true, true, true],
+        "doc": "If the dimension is under dirichlet boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/dirichlet_boundary/*/dimension/*",
+        "type":"bool",
+        "default": true,
+        "doc": "If the dimension is under dirichlet boundary condition"
     },
     {
         "pointers": "/boundary_conditions/neumann_boundary",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "The list of neumann boundary condition describing the forces"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*",
+        "type":"object",
+        "default":"//TODO",
+        "optional":[
+            "id", 
+            "value", 
+            "dimension"
+        ],
+        "doc": "Neumann boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/id",
+        "type":"int",
+        "default":"//TODO",
+        "doc": "id of Neumann boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/value",
+        "type":"list",
+        "default":"//TODO",
+        "doc": "values of neumann boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/value/*",
+        "type":"string",
+        "default":"//TODO",
+        "doc": "values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/value/*",
+        "type":"float",
+        "default":"//TODO",
+        "doc": "values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/value/*",
+        "type":"float",
+        "default":"//TODO",
+        "doc": "values of Neumann boundary condition for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/dimension",
+        "type":"list",
+        "default":[true, true, true],
+        "doc": "If the dimension is under neumann boundary condition"
+    },
+    {
+        "pointer":"/boundary_conditions/neumann_boundary/*/dimension/*",
+        "type":"bool",
+        "default":true,
+        "doc": "If the dimension is under neumann boundary condition"
     },
     {
         "pointers": "/boundary_conditions/pressure_boundary",
@@ -649,8 +817,40 @@
         "pointers": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "The list of obstacle displacements"
     },
+    {
+        "pointer":"/boundary_conditions/obstacle_displacements/*",
+        "type":"object",
+        "default": null,
+        "required":[
+            "id",
+            "value"
+        ],
+        "doc": "Obstacle displacements"
+    },
+    {
+        "pointer":"/boundary_conditions/obstacle_displacements/*/id",
+        "type":"int",
+        "doc": "id of Obstacle displacements"
+    },
+    {
+        "pointer":"/boundary_conditions/obstacle_displacements/*/value",
+        "type":"list",
+        "doc": "values of Obstacle displacements for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/obstacle_displacements/*/value/*",
+        "type":"string",
+        "doc": "values of Obstacle displacements for each dimension"
+    },
+    {
+        "pointer":"/boundary_conditions/obstacle_displacements/*/value/*",
+        "type":"float",
+        "doc": "values of Obstacle displacements for each dimension"
+    },
+
+
     {
         "pointers": "/initial_conditions",
         "default": null,
