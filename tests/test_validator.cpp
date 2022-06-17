@@ -252,7 +252,7 @@ TEST_CASE("pushbox", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    WARN(s);
+    INFO(s);
     REQUIRE(r);
 }
 
@@ -270,7 +270,7 @@ TEST_CASE("screw", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    WARN(s);
+    INFO(s);
     REQUIRE(r);
 }
 
@@ -288,7 +288,7 @@ TEST_CASE("slingshot", "[validator]")
 
     bool r = sjv.verify_json(input,rules); 
     std:: string s = sjv.log2str();
-    WARN(s);
+    INFO(s);
     REQUIRE(r);
 }
 
@@ -315,4 +315,153 @@ TEST_CASE("polyfem-data", "[validator]"){
             REQUIRE(r);
         }
     }
+}
+TEST_CASE("simple", "[inject]")
+{
+    json input = R"( 
+        {
+            "string1": "teststring",
+            "geometry": 
+            {
+                "nested": 3
+            }
+        }
+        )"_json;
+
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["string1"],
+            "optional":["geometry","other"]
+        },
+        {
+            "pointer": "/geometry",
+            "type": "object",
+            "default": null,
+            "optional": ["nested"]
+        },
+        {
+            "pointer": "/geometry/nested",
+            "type": "int",
+            "default": 3
+        },
+        {
+            "pointer": "/other",
+            "type": "int",
+            "default": null
+        },
+        {
+            "pointer": "/other/nested",
+            "type": "int",
+            "default": 3
+        }
+        ]
+        )"_json;
+
+    json output = R"( 
+        {
+            "string1": "teststring",
+            "geometry": 
+            {
+                "nested": 3
+            },
+            "other": 
+            {
+                "nested": 3
+            }
+        }
+        )"_json;
+
+    sjv::SJV sjv;
+
+    sjv.strict = false;
+
+    bool r = sjv.verify_json(input,rules); 
+    std:: string s = sjv.log2str();
+    INFO(s);
+    REQUIRE(r);
+
+    json return_json = sjv.inject_defaults(input,rules); 
+
+    INFO(return_json);
+    REQUIRE(return_json == output);
+}
+
+TEST_CASE("list", "[inject]")
+{
+    json input = R"( 
+        {
+            "list1": 
+            [
+                {
+                    "count": 0,
+                    "other": 1
+                },
+                {
+                    "count": 0
+                }
+            ]
+        }
+        )"_json;
+
+    json rules = R"( 
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["list1"]
+        },
+        {
+            "pointer": "/list1",
+            "type": "list"
+        },
+        {
+            "pointer": "/list1/*",
+            "type": "object",
+            "required": ["count"],
+            "optional": ["other"]
+        },
+        {
+            "pointer": "/list1/*/count",
+            "type": "int"
+        },
+        {
+            "pointer": "/list1/*/other",
+            "type": "int",
+            "default": 2
+        }
+        ]
+        )"_json;
+
+    json output = R"( 
+        {
+            "list1": 
+            [
+                {
+                    "count": 0,
+                    "other": 1
+                },
+                {
+                    "count": 0,
+                    "other": 2
+                }
+            ]
+        }
+        )"_json;
+
+    sjv::SJV sjv;
+
+    sjv.strict = false;
+
+    bool r = sjv.verify_json(input,rules); 
+    std:: string s = sjv.log2str();
+    INFO(s);
+    REQUIRE(r);
+
+    json return_json = sjv.inject_defaults(input,rules); 
+
+    INFO(return_json);
+    REQUIRE(return_json == output);
 }
