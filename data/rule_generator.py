@@ -1,4 +1,5 @@
 import json
+from xml.dom.pulldom import default_bufsize
 from xml.etree.ElementPath import prepare_descendant
 
 default = None
@@ -6,14 +7,19 @@ with open('./default.json', "r") as f:
     default = json.load(f)
     
 rules = []
-
+tmp = {}
+tmp["pointers"] = '/'
+tmp['type'] = 'object'
+tmp['optional'] = [*default.keys()]
+tmp['doc'] = "Root of the configuration file."
+rules.append(tmp)
 def parse(default:json, prepending = ''):
     for k, v in default.items():
         if type(v) == dict:
             key = prepending + "/" + k
             tmp = {}
             tmp["pointers"] = key
-            tmp['default'] = 'null'
+            tmp['default'] = None
             tmp['type'] = 'object'
             tmp['optional'] = [*v.keys()]
             tmp['doc'] = "//TODO"
@@ -23,8 +29,8 @@ def parse(default:json, prepending = ''):
             key = prepending + "/" + k
             tmp = {}
             tmp['pointers'] = key
-            if v == "":
-                tmp["default"] = 'null'
+            if type(v)==str:
+                tmp["default"] = v
                 tmp['type'] = 'string'
             elif type(v) == list:
                 tmp['default'] = v
@@ -38,8 +44,11 @@ def parse(default:json, prepending = ''):
             elif type(v) == bool:
                 tmp['default'] = v
                 tmp['type'] = 'bool'
+            elif v is None:
+                tmp['default'] = None
+                tmp['type'] = 'object'
             tmp['doc'] = '//TODO'
             rules.append(tmp)
 parse(default)
-with open('tmp_rules.json', 'w') as f:
+with open('default_rules.json', 'w') as f:
     json.dump(rules, f, indent=4)
