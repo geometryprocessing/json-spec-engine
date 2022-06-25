@@ -461,7 +461,7 @@
         "pointer": "/space/advanced/count_flipped_els",
         "default": true,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "{DZ TODO not sure if this is correct, e.g., what this does for higher order} Count the number of elements with Jacobian of the geometric map not positive everywhere."
     },
     {
         "pointer": "/time",
@@ -473,7 +473,7 @@
             "dt", 
             "time_steps"
         ],
-        "doc": "The time parameters"
+        "doc": "{DZ dt and time_steps seem redundant, which one take priority?} The time parameters: start time t0, end time tend, time step dt, number of time steps. "
     },
     {
         "pointer": "/time/t0",
@@ -510,19 +510,19 @@
             "epsv",
             "friction_coefficient"
         ],
-        "doc": "All the parameters to define contacts like collisions, friction coefficient"
+        "doc": "Contact handling parameters."
     },
     {
         "pointer": "/contact/enabled",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "True if contact handling is enabled"
     },
     {
         "pointer": "/contact/dhat",
         "default": 0.001,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "IPC barrier function parameter (see IPC paper)"
     },
     {
         "pointer": "/contact/dhat_percentage",
@@ -534,13 +534,13 @@
         "pointer": "/contact/epsv",
         "default": 0.001,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "IPC friction smoothing parameter (see IPC paper) "
     },
     {
         "pointer": "/contact/friction_coefficient",
         "default": 0,
         "type": "float",
-        "doc": "Friction Coefficient"
+        "doc": "Friction Coefficient {DZ TODO: friction coefficient options need to be: constant (global default) and per pair of selection ids}"
     },
     {
         "pointer": "/solver",
@@ -570,13 +570,13 @@
         "pointer": "/solver/linear/solver",
         "default": "",
         "type": "string",
-        "doc": "Linear solver type"
+        "doc": "Linear solver type {DZ TODO: which types are supported?}"
     },
     {
         "pointer": "/solver/linear/precond",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Preconditioner for iterative linear solver {DZ TODO: which preconditioners are supported?}"
     },
     {
         "pointer": "/solver/nonlinear",
@@ -591,43 +591,43 @@
             "relative_gradient",
             "line_search"
         ],
-        "doc": "Settings for nonlinear solver"
+        "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
     },
     {
         "pointer": "/solver/nonlinear/solver",
         "default": "newton",
         "type": "string",
-        "doc": "Nonlinear solver type"
+        "doc": "Nonlinear solver type {DZ: TODO what types are supported in addition to Newton?  BFGS? Newton?}"
     },
     {
         "pointer": "/solver/nonlinear/f_delta",
         "default": 1e-10,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "Stopping criterion:  minimal change of the energy for the iterations to continue (DZ: and if the energy not defined}  "
     },
     {
         "pointer": "/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
-        "doc": "Grad norm tolerance for the nonlinear solver"
+        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",
         "default": 1000,
         "type": "int",
-        "doc": "Maximum iterations of new steps for one timestep"
+        "doc": "Maximum number of iterations for a non-linear solve."
     },
     {
         "pointer": "/solver/nonlinear/use_grad_norm",
         "default": true,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
     },
     {
         "pointer": "/solver/nonlinear/relative_gradient",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
     },
     {
         "pointer": "/solver/nonlinear/line_search",
@@ -637,19 +637,19 @@
             "method",
             "use_grad_norm_tol"
         ],
-        "doc": "Settings for line searcher"
+        "doc": "Settings for line search in the nonlinear solver"
     },
     {
         "pointer": "/solver/nonlinear/line_search/method",
         "default": "backtracking",
         "type": "string",
-        "doc": "line search type"
+        "doc": "line search type {DZ TODO: what types are there?}"
     },
     {
         "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
         "default": 0.0001,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: unclear - should this be called grad_norm_tol and be a float, or use_grad_norm_tol and be a boolean?}"
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -660,19 +660,19 @@
             "max_weight",
             "force"
         ],
-        "doc": "//TODO"
+        "doc": "{DZ TODO: not 100% what these correspond to rename? e.g. is the weight a penalty weight? what about initial lagrange multipliers? is there control on how the weight is updated?, add an algorithm description reference, what does the force flag do?}"
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
         "default": 1000000.0,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: rename initial_penalty_weight? }"
     },
     {
         "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 100000000000.0,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: rename max_penalty_weight?}"
     },
     {
         "pointer": "/solver/augmented_lagrangian/force",
@@ -691,7 +691,7 @@
             "barrier_stiffness",
             "lagged_damping_weight"
         ],
-        "doc": "Settings for solver to handle contacts"
+        "doc": "Settings for contact handling in the solver."
     },
     {
         "pointer": "/solver/contact/CCD",
@@ -708,48 +708,48 @@
         "pointer": "/solver/contact/CCD/broad_phase",
         "default": "hash_grid",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Broad phase collision-detection algorithm to use {DZ TODO: enumerate options}"
     },
     {
         "pointer": "/solver/contact/CCD/tolerance",
         "default": 1e-06,
         "type": "float",
-        "doc": "//TODO"
+        "doc": "CCD tolerance {DZ TODO add reference or explain what it does}"
     },
     {
         "pointer": "/solver/contact/CCD/max_iterations",
         "default": 1000000.0,
         "type": "float",
-        "doc": "Maximum iterations for continuous collision detection"
+        "doc": "Maximum number of iterations for continuous collision detection"
     },
     {
         "pointer": "/solver/contact/friction_iterations",
         "default": 1,
         "type": "int",
-        "doc": "Maximum iterations to solve frictions"
+        "doc": "Maximum number of update iterations for lagged friction formulation (see IPC paper)."
     },
     {
         "pointer": "/solver/contact/friction_convergence_tol",
         "default": 0.01,
         "type": "float",
-        "doc": "Tolerence for friction convergence"
+        "doc": "Tolerence for friction convergence {DZ TODO elaborate what quantity the tolerance is applied to}"
     },
     {
         "pointer": "/solver/contact/barrier_stiffness",
         "default": "adaptive",
         "type": "string",
-        "doc": "The coefficient of clamped log-barrier function"
+        "doc": "How coefficient of clamped log-barrier function for contact is updated {DZ TODO add options: is it adaptive| constant?} "
     },
     {
         "pointer": "/solver/contact/barrier_stiffness",
         "type": "float",
-        "doc": "The coefficient of clamped log-barrier function"
+        "doc": "The coefficient of clamped log-barrier function value. {DZ TODO: for adaptive initial value?}"
     },
     {
         "pointer": "/solver/contact/lagged_damping_weight",
         "default": 0,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: : add description and/or paper ref}"
     },
     {
         "pointer": "/solver/ignore_inertia",
@@ -777,12 +777,12 @@
         "pointer": "/solver/advanced/lump_mass_matrix",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
     },
     {
         "pointer": "/materials",
         "type": "list",
-        "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho), type()"
+        "doc": "Material Parameters lists including id, Young's modulus(E), Poisson ratio(nu), Density(rho),or Lame constants lambda/mu,  type() {DZ TODO: is id referring to id assigned by selection? what is type? How do E/nu and lambda/mu interact Add arbitrary elasticity tensor as an option}"
     },
     {
         "pointer": "/materials/*",
@@ -849,23 +849,23 @@
             "pressure_boundary",
             "obstacle_displacements"
         ],
-        "doc": "The settings for boundary conditions"
+        "doc": "The settings for boundary conditions. {DZ TODO is rhs actually a volume force, so that e.g., non-homogeneous Neumann gets added to it to get a complete rhs, or is it a complete rhs?}"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "float",
-        "doc": "Right hand side of the system being solved"
+        "doc": "Right-hand side of the system being solved {DZ TODO unclear what this single number means, or more }"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "type": "string",
-        "doc": "Right hand side of the system being solved"
+        "doc": "Right hand side of the system being solved {DZ TODO is this a formulat for computing rhs as function of x,y,z?}"
     },
     {
         "pointer": "/boundary_conditions/rhs",
         "default": "[]",
         "type": "list",
-        "doc": "Right hand side of the system being solved"
+        "doc": "Right hand side of the system being solved {DZ TODO list of values per ... or list of strings per ... ?}"
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
@@ -882,7 +882,7 @@
         "pointer": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of dirichlet boundary condition describing the displacement"
+        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*",
@@ -895,7 +895,7 @@
         "optional":[
             "dimension"
         ],
-        "doc": "Dirichlet boundary condition"
+        "doc": "Dirichlet boundary condition. {DZ TODO: rename dimension to enabled_dimensions?}"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/id",
@@ -905,35 +905,35 @@
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/value",
         "type":"list",
-        "doc": "values of Dirichlet boundary condition for each dimension"
+        "doc": "Values of Dirichlet boundary condition  {DZ TODO these lists are of length 2 or 3?}"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/value/*",
         "type":"string",
-        "doc": "values of Dirichlet boundary condition for each dimension"
+        "doc": "Values of Dirichlet boundary condition for each dimension {DZ TODO: strings = formulas?}"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/value/*",
         "type":"float",
-        "doc": "values of Dirichlet boundary condition for each dimension"
+        "doc": "Values of Dirichlet boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/dimension",
         "type":"list",
         "default": [true, true, true],
-        "doc": "If the dimension is under dirichlet boundary condition"
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
     },
     {
         "pointer":"/boundary_conditions/dirichlet_boundary/*/dimension/*",
         "type":"bool",
         "default": true,
-        "doc": "If the dimension is under dirichlet boundary condition"
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of neumann boundary condition describing the forces"
+        "doc": "The list of Neumann boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection. "
     },
     {
         "pointer":"/boundary_conditions/neumann_boundary/*",
@@ -955,31 +955,31 @@
         "pointer":"/boundary_conditions/neumann_boundary/*/value",
         "type":"list",
         "default":"//TODO",
-        "doc": "values of neumann boundary condition for each dimension"
+        "doc": "Values of Neumann boundary condition for each dimension  {DZ TODO: strings = formulas?}"
     },
     {
         "pointer":"/boundary_conditions/neumann_boundary/*/value/*",
         "type":"string",
         "default":"//TODO",
-        "doc": "values of Neumann boundary condition for each dimension"
+        "doc": "Values of Neumann boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/neumann_boundary/*/value/*",
         "type":"float",
         "default":"//TODO",
-        "doc": "values of Neumann boundary condition for each dimension"
+        "doc": "Values of Neumann boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/neumann_boundary/*/value/*",
         "type":"float",
         "default": "//TODO",
-        "doc": "values of Neumann boundary condition for each dimension"
+        "doc": "Values of Neumann boundary condition for each dimension"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "Dirichlet boundary condition for the pressure variable (Stokes, incompressible elasticity). Defined by a list of (id, value)  pairs as for all other boundary conditions."
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*",
@@ -992,45 +992,45 @@
         "optional":[
             "dimension"
         ],
-        "doc": "Pressure boundary condition"
+        "doc": ""
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*/id",
         "type":"int",
-        "doc": "id of Pressure boundary condition"
+        "doc": "id for th pressure Dirichlet boundary condition"
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*/value",
         "type":"list",
-        "doc": "values of Pressure boundary condition for each dimension"
+        "doc": "Values of pressure Dirichlet boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*/value/*",
         "type":"string",
-        "doc": "values of Pressure boundary condition for each dimension"
+        "doc": "Values of  pressure Dirichlet  boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*/value/*",
         "type":"float",
-        "doc": "values of Pressure boundary condition for each dimension"
+        "doc": "Values of pressure Dirichlet boundary condition for each dimension"
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*/dimension",
         "type":"list",
         "default": [true, true, true],
-        "doc": "If the dimension is under Pressure boundary condition"
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension"
     },
     {
         "pointer":"/boundary_conditions/pressure_boundary/*/dimension/*",
         "type":"bool",
         "default": true,
-        "doc": "If the dimension is under Pressure boundary condition"
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",
         "default": [],
         "type": "list",
-        "doc": "The list of obstacle displacements"
+        "doc": "The list of obstacle displacements. Each entry is an (id, value) pair, where ids are set by selection."
     },
     {
         "pointer":"/boundary_conditions/obstacle_displacements/*",
@@ -1050,17 +1050,17 @@
     {
         "pointer":"/boundary_conditions/obstacle_displacements/*/value",
         "type":"list",
-        "doc": "values of Obstacle displacements for each dimension"
+        "doc": "Values of Obstacle displacements for each dimension"
     },
     {
         "pointer":"/boundary_conditions/obstacle_displacements/*/value/*",
         "type":"string",
-        "doc": "values of Obstacle displacements for each dimension"
+        "doc": "Values of Obstacle displacements for each dimension {DZ TODO: string is a formula?}"
     },
     {
         "pointer":"/boundary_conditions/obstacle_displacements/*/value/*",
         "type":"float",
-        "doc": "values of Obstacle displacements for each dimension"
+        "doc": "Values of Obstacle displacements for each dimension"
     },
 
 
@@ -1073,13 +1073,13 @@
             "velocity",
             "acceleration"
         ],
-        "doc": "//TODO"
+        "doc": "Initial conditions for time-dependent problem, imposed on the main variable, its derivative or second derivtive {DZ TODO: how does it apply to time-dependent Stokes or Navier-Stokes? What about pressure? If these are used for Navier-Stokes need to rename}"
     },
     {
         "pointer": "/initial_conditions/solution",
         "default": [],
         "type": "list",
-        "doc": "//TODO"
+        "doc": "A list of (id, value) pairs defininng the initial conditions for the main variable values. Ids are set by selection, and values can be floats or strings. {DZ TODO strings = formulas?}"
     },
     {
         "pointer": "/initial_conditions/solution/*",
@@ -1185,7 +1185,7 @@
         "pointer": "/output/json",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "File name for json output {DZ TODO: elaborate - does this write out everything defined in this file?}"
     },
     {
         "pointer": "/output/paraview",
@@ -1202,13 +1202,13 @@
             "options",
             "reference"
         ],
-        "doc": "//TODO"
+        "doc": "Output in paraview format {DZ TODO: not sure what exactly all of these are so need to add descriptions below}"
     },
     {
         "pointer": "/output/paraview/file_name",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Paraview output file name"
     },
     {
         "pointer": "/output/paraview/vismesh_rel_area",
@@ -1226,7 +1226,7 @@
         "pointer": "/output/paraview/high_order_mesh",
         "default": true,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "{DZ TODO why is this bool, rather than eg mesh order?}"
     },
     {
         "pointer": "/output/paraview/volume",
@@ -1264,37 +1264,37 @@
         "pointer": "/output/paraview/options/material",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, write out material values {DZ: per mesh node?}"
     },
     {
         "pointer": "/output/paraview/options/body_ids",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: are these selection-set ids? then rename to id}"
     },
     {
         "pointer": "/output/paraview/options/contact_forces",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, write out contact forces"
     },
     {
         "pointer": "/output/paraview/options/friction_forces",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, write out friction forces"
     },
     {
         "pointer": "/output/paraview/options/velocity",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, write out velocities {DZ TODO: for Navier-Stokes, what does this do?}"
     },
     {
         "pointer": "/output/paraview/options/acceleration",
         "default": false,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "If true, write out accelerations {DZ TODO: for Navier-Sokes, what does this do?}"
     },
     {
         "pointer": "/output/paraview/reference",
@@ -1304,19 +1304,19 @@
             "solution",
             "gradient"
         ],
-        "doc": "//TODO"
+        "doc": "Write out the analytic/numerical ground-truth solution and or its gradient"
     },
     {
         "pointer": "/output/paraview/reference/solution",
         "default": null,
         "type": "object",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: Should this be bool?}"
     },
     {
         "pointer": "/output/paraview/reference/gradient",
         "default": null,
         "type": "object",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: Should this be bool?}"
     },
     {
         "pointer": "/output/data",
@@ -1334,19 +1334,19 @@
             "mises",
             "nodes"
         ],
-        "doc": "//TODO"
+        "doc": "File names to write output data to."
     },
     {
         "pointer": "/output/data/solution",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Main variable solution {DZ TODO: what about pressure? Also included here? describe format e.g. 2/3 values per line}"
     },
     {
         "pointer": "/output/data/full_mat",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "System matrix {DZ TODO: for nonlinear problems which one}"
     },
     {
         "pointer": "/output/data/stiffness_mat",
@@ -1358,7 +1358,7 @@
         "pointer": "/output/data/solution_mat",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: How is this different from solution?}"
     },
     {
         "pointer": "/output/data/stress_mat",
@@ -1370,31 +1370,31 @@
         "pointer": "/output/data/u_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: is this directory to write out u (displacement) at every step for time depedent? As usual, what about Navier-Stokes?}"
     },
     {
         "pointer": "/output/data/v_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: See question for u_path}"
     },
     {
         "pointer": "/output/data/a_path",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: See question for u_path}"
     },
     {
         "pointer": "/output/data/mises",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "File name to write per-node Von Mises stress values to."
     },
     {
         "pointer": "/output/data/nodes",
         "default": "",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: not sure what is written out here}"
     },
     {
         "pointer": "/output/advanced",
@@ -1412,13 +1412,13 @@
             "save_nl_solve_sequence",
             "spectrum"
         ],
-        "doc": "//TODO"
+        "doc": "Additional output options"
     },
     {
         "pointer": "/output/advanced/timestep_prefix",
         "default": "step_",
         "type": "string",
-        "doc": "//TODO"
+        "doc": "Prefix for output file names  for each time step {DZ TODO: not sure what step_ means here - are files going to be step_N.txt?,  what format for N? } "
     },
     {
         "pointer": "/output/advanced/sol_on_grid",
@@ -1430,13 +1430,13 @@
         "pointer": "/output/advanced/compute_error",
         "default": true,
         "type": "bool",
-        "doc": "//TODO"
+        "doc": "{DZ TODO: what determines which error is computed?}"
     },
     {
         "pointer": "/output/advanced/sol_at_node",
         "default": -1,
         "type": "int",
-        "doc": "//TODO"
+        "doc": "Write out solution values at a specific node {DZ TODO: is this correct?}"
     },
     {
         "pointer": "/output/advanced/vis_boundary_only",
@@ -1492,7 +1492,7 @@
             "v_path",
             "a_path"
         ],
-        "doc": "//TODO"
+        "doc": "{DZ TODO: same questions as for output; additionally, how is this different from initial conditions}"
     },
     {
         "pointer": "/input/data/u_path",
