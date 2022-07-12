@@ -4,12 +4,12 @@
 #include <string>
 #include <memory>
 
-using json = nlohmann::json;
-using string = std::string;
-
-namespace sjv
+namespace jse
 {
-    class SJV
+    using json = nlohmann::json;
+    using string = std::string;
+
+    class JSE
     {
     public:
         // verify the input json against the set of rules in specs
@@ -75,4 +75,4 @@ namespace sjv
         std::tuple<bool, string> is_subset_pointer(const string &json_pointer, const string &pointer);
     };
 
-} // namespace sjv
+} // namespace jse

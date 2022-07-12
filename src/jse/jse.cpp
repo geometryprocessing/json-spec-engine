@@ -1,23 +1,23 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <sjv/sjv.h>
+#include <jse/jse.h>
 #include <iostream>
 #include <filesystem> // C++17
 #include <sstream>
 #include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace sjv
+namespace jse
 {
 
     //////////// PUBLIC
 
-    bool SJV::verify_json(const json &input, const json &rules)
+    bool JSE::verify_json(const json &input, const json &rules)
     {
         log.clear();
         return verify_json("/", input, rules);
     };
 
-    json SJV::inject_defaults(const json &input, const json &rules)
+    json JSE::inject_defaults(const json &input, const json &rules)
     {
         // The code below assumes that the input satisfies the rules
         assert(verify_json(input, rules));
@@ -41,19 +41,18 @@ namespace sjv
                         out_flat[std::get<1>(subset)] = rule["default"];
 
                 // Try it also without the last entry to capture object types which are empty
-                string key_parent = e.key().substr(0,e.key().find_last_of("/\\")); 
-  
+                string key_parent = e.key().substr(0, e.key().find_last_of("/\\"));
+
                 subset = is_subset_pointer(key_parent, string(rule["pointer"]));
                 if (std::get<0>(subset))
                     if (!out_flat.contains(std::get<1>(subset)))
                         out_flat[std::get<1>(subset)] = rule["default"];
-                
             }
             // Special case as "/" is not inserted in the flat representation
             std::tuple<bool, string> subset = is_subset_pointer("/", string(rule["pointer"]));
             if (std::get<0>(subset))
                 if (!out_flat.contains(std::get<1>(subset)))
-                        out_flat[std::get<1>(subset)] = rule["default"];
+                    out_flat[std::get<1>(subset)] = rule["default"];
         }
 
         // Unflatten the input
@@ -65,7 +64,7 @@ namespace sjv
         return output;
     };
 
-    std::string SJV::log2str()
+    std::string JSE::log2str()
     {
         std::stringstream s;
 
@@ -78,7 +77,7 @@ namespace sjv
 
     //////////// PRIVATE
 
-    bool SJV::verify_json(const string &pointer, const json &input, const json &rules)
+    bool JSE::verify_json(const string &pointer, const json &input, const json &rules)
     {
         // if (pointer == "/geometry/*/surface_selection/*")
         //     std::cout << "gotcha" << std::endl;
@@ -110,7 +109,7 @@ namespace sjv
             }
         }
 
-        if (count == 0 && !matching_rules.empty()) 
+        if (count == 0 && !matching_rules.empty())
         {
             // Before giving up, try boxing a primitive type
             if (boxing_primitive && !input.is_array())
@@ -191,7 +190,7 @@ namespace sjv
         // If they all pass, return true
         return true;
     };
-    bool SJV::verify_rule(const json &input, const json &rule)
+    bool JSE::verify_rule(const json &input, const json &rule)
     {
         string type = rule.at("type");
         if (type == "list")
@@ -216,7 +215,7 @@ namespace sjv
             return false;
         }
     };
-    bool SJV::verify_rule_file(const json &input, const json &rule)
+    bool JSE::verify_rule_file(const json &input, const json &rule)
     {
         assert(rule.at("type") == "file");
 
@@ -246,7 +245,7 @@ namespace sjv
 
         return true;
     };
-    bool SJV::verify_rule_folder(const json &input, const json &rule)
+    bool JSE::verify_rule_folder(const json &input, const json &rule)
     {
         assert(rule.at("type") == "folder");
 
@@ -262,7 +261,7 @@ namespace sjv
 
         return true;
     };
-    bool SJV::verify_rule_float(const json &input, const json &rule)
+    bool JSE::verify_rule_float(const json &input, const json &rule)
     {
         assert(rule.at("type") == "float");
 
@@ -277,7 +276,7 @@ namespace sjv
 
         return true;
     };
-    bool SJV::verify_rule_int(const json &input, const json &rule)
+    bool JSE::verify_rule_int(const json &input, const json &rule)
     {
         assert(rule.at("type") == "int");
 
@@ -292,7 +291,7 @@ namespace sjv
 
         return true;
     };
-    bool SJV::verify_rule_string(const json &input, const json &rule)
+    bool JSE::verify_rule_string(const json &input, const json &rule)
     {
         assert(rule.at("type") == "string");
 
@@ -311,7 +310,7 @@ namespace sjv
 
         return true;
     };
-    bool SJV::verify_rule_object(const json &input, const json &rule)
+    bool JSE::verify_rule_object(const json &input, const json &rule)
     {
         assert(rule.at("type") == "object");
 
@@ -325,7 +324,7 @@ namespace sjv
 
         return true;
     };
-    bool SJV::verify_rule_bool(const json &input, const json &rule)
+    bool JSE::verify_rule_bool(const json &input, const json &rule)
     {
         assert(rule.at("type") == "bool");
 
@@ -335,7 +334,7 @@ namespace sjv
         return true;
     };
 
-    bool SJV::verify_rule_list(const json &input, const json &rule)
+    bool JSE::verify_rule_list(const json &input, const json &rule)
     {
         assert(rule.at("type") == "list");
 
@@ -351,7 +350,7 @@ namespace sjv
         return true;
     };
 
-    json SJV::collect_default_rules(const json &rules)
+    json JSE::collect_default_rules(const json &rules)
     {
         // Find all rules that apply for the input node
         // TODO: accelerate this
@@ -366,7 +365,7 @@ namespace sjv
         return matching_rules;
     };
 
-    json SJV::collect_default_rules(const string &pointer, const json &rules)
+    json JSE::collect_default_rules(const string &pointer, const json &rules)
     {
         // Find all rules that apply for the input node
         // TODO: accelerate this
@@ -381,12 +380,12 @@ namespace sjv
         return matching_rules;
     };
 
-    bool SJV::contained_in_list(string item, const json &list)
+    bool JSE::contained_in_list(string item, const json &list)
     {
         return std::find(list.begin(), list.end(), item) != list.end();
     };
 
-    std::vector<json> SJV::collect_pointer(const string &pointer, const json &rules)
+    std::vector<json> JSE::collect_pointer(const string &pointer, const json &rules)
     {
         std::vector<json> matching_rules;
         for (auto i : rules)
@@ -397,7 +396,7 @@ namespace sjv
         return matching_rules;
     };
 
-    json SJV::find_valid_rule(const string &pointer, const json &input, const json &rules)
+    json JSE::find_valid_rule(const string &pointer, const json &input, const json &rules)
     {
         for (auto i : collect_pointer(pointer, rules))
             if (verify_rule(input, i))
@@ -406,7 +405,7 @@ namespace sjv
         return json();
     };
 
-    std::tuple<bool, string> SJV::is_subset_pointer(const string &json, const string &pointer)
+    std::tuple<bool, string> JSE::is_subset_pointer(const string &json, const string &pointer)
     {
         // Splits a string into tokens using the deliminator delim
         auto tokenize = [](std::string const &str, const char delim) {
@@ -481,4 +480,4 @@ namespace sjv
         return {true, buf};
     };
 
-} // namespace sjv
+} // namespace jse

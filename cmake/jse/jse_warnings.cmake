@@ -3,11 +3,11 @@
 # http://stackoverflow.com/questions/5088460/flags-to-enable-thorough-and-verbose-g-warnings
 ################################################################################
 
-if(TARGET sjv::warnings)
+if(TARGET jse::warnings)
 	return()
 endif()
 
-set(SJV_FLAGS
+set(JSE_FLAGS
 	-Wall
 	-Wextra
 	-pedantic
@@ -152,13 +152,13 @@ set(SJV_FLAGS
 
 # Flags above don't make sense for MSVC
 if(MSVC)
-	set(SJV_FLAGS)
+	set(JSE_FLAGS)
 endif()
 
 include(CheckCXXCompilerFlag)
 
-add_library(sjv_warnings INTERFACE)
-add_library(sjv::warnings ALIAS sjv_warnings)
+add_library(jse_warnings INTERFACE)
+add_library(jse::warnings ALIAS jse_warnings)
 
 foreach(FLAG IN ITEMS ${MY_FLAGS})
 	string(REPLACE "=" "-" FLAG_VAR "${FLAG}")
@@ -166,6 +166,6 @@ foreach(FLAG IN ITEMS ${MY_FLAGS})
 		check_cxx_compiler_flag("${FLAG}" IS_SUPPORTED_${FLAG_VAR})
 	endif()
 	if(IS_SUPPORTED_${FLAG_VAR})
-		target_compile_options(sjv_warnings INTERFACE ${FLAG})
+		target_compile_options(jse_warnings INTERFACE ${FLAG})
 	endif()
 endforeach()

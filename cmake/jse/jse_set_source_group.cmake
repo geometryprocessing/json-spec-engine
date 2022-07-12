@@ -1,5 +1,5 @@
 # Set source group for IDE like Visual Studio or XCode
-function(sjv_set_source_group)
+function(jse_set_source_group)
   foreach(filepath IN ITEMS ${ARGN})
     get_filename_component(folderpath "${filepath}" DIRECTORY)
     get_filename_component(foldername "${folderpath}" NAME)

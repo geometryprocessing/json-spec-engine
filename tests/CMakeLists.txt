@@ -15,10 +15,10 @@ add_executable(unit_tests ${test_sources})
 include(catch2)
 target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
 
-target_link_libraries(unit_tests PUBLIC sjv::sjv)
+target_link_libraries(unit_tests PUBLIC jse::jse)
 
-include(sjv_warnings)
-target_link_libraries(unit_tests PRIVATE sjv::warnings)
+include(jse_warnings)
+target_link_libraries(unit_tests PRIVATE jse::warnings)
 
 if(POLYSOLVE_WITH_SANITIZERS)
 	add_sanitizers(unit_tests)

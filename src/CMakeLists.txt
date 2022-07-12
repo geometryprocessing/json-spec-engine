@@ -1,7 +1,7 @@
 set(SOURCES
-    sjv/sjv.cpp
+    jse/jse.cpp
 )
 
-sjv_prepend_current_path(SOURCES)
-sjv_set_source_group(${SOURCES})
-target_sources(sjv PRIVATE ${SOURCES})
+jse_prepend_current_path(SOURCES)
+jse_set_source_group(${SOURCES})
+target_sources(jse PRIVATE ${SOURCES})

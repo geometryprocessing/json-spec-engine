@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-#include <sjv/sjv.h>
+#include <jse/jse.h>
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <fstream>
@@ -8,17 +8,17 @@
 #include <filesystem>
 //////////////////////////////////////////////////////////////////////////
 
-using namespace sjv;
+using namespace jse;
 
 TEST_CASE("single_rule", "[validator]")
 {
     INFO("test1.");
-    json input = R"( 
+    json input = R"(
         {
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -27,21 +27,21 @@ TEST_CASE("single_rule", "[validator]")
         ]
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    bool b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    bool b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(b);
 }
 
 TEST_CASE("only_one_rule_can_be_valid", "[validator]")
 {
-    json input = R"( 
+    json input = R"(
         {
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -54,22 +54,22 @@ TEST_CASE("only_one_rule_can_be_valid", "[validator]")
         ]
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    bool b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    bool b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(!b);
 }
 
 TEST_CASE("min_bound_numeric", "[validator]")
 {
-    json input = R"( 
+    json input = R"(
         {
             "field1": 48.5
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -84,28 +84,28 @@ TEST_CASE("min_bound_numeric", "[validator]")
         ]
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    bool b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    bool b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(b);
 
     input["field1"] = 40.5;
 
-    b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(!b);
 }
 
 TEST_CASE("file_type", "[validator]")
 {
-    json input = R"( 
+    json input = R"(
         {
             "file1": "CMakeCach.txt"
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -121,40 +121,39 @@ TEST_CASE("file_type", "[validator]")
         ]
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
     bool b;
 
-    sjv.cwd = std::filesystem::current_path();
-    sjv.strict = true;
-    sjv.skip_file_check = false;
-    b = sjv.verify_json(input,rules);
-    
-    INFO(sjv.log2str());
+    jse.cwd = std::filesystem::current_path();
+    jse.strict = true;
+    jse.skip_file_check = false;
+    b = jse.verify_json(input, rules);
+
+    INFO(jse.log2str());
     REQUIRE(!b);
 
     input["file1"] = "CMakeCache.txt";
 
-    b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(b);
 
     rules[1]["extensions"][0] = ".msh";
 
-    b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(!b);
-
 }
 
 TEST_CASE("type_string", "[validator]")
 {
-    json input = R"( 
+    json input = R"(
         {
             "string1": "teststring"
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -168,36 +167,35 @@ TEST_CASE("type_string", "[validator]")
         ]
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
     bool b;
-    // b = sjv.verify_json(input,rules);
-    // INFO(sjv.log2str());
+    // b = jse.verify_json(input,rules);
+    // INFO(jse.log2str());
     // REQUIRE(b);
 
     rules[1]["options"][0] = "blah";
 
-    b = sjv.verify_json(input,rules);
-    INFO(sjv.log2str());
+    b = jse.verify_json(input, rules);
+    INFO(jse.log2str());
     REQUIRE(!b);
 
     // rules[1]["options"][1] = "teststring";
 
-    // b = sjv.verify_json(input,rules);
-    // INFO(sjv.log2str());
+    // b = jse.verify_json(input,rules);
+    // INFO(jse.log2str());
     // REQUIRE(b);
-
 }
 
 TEST_CASE("type_object", "[validator]")
 {
-    json input = R"( 
+    json input = R"(
         {
             "string1": "teststring"
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -207,17 +205,16 @@ TEST_CASE("type_object", "[validator]")
         ]
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = true;
-    REQUIRE(!sjv.verify_json(input,rules));
-    sjv.strict = false;
-    REQUIRE(sjv.verify_json(input,rules));
+    jse.strict = true;
+    REQUIRE(!jse.verify_json(input, rules));
+    jse.strict = false;
+    REQUIRE(jse.verify_json(input, rules));
 
     rules[0]["required"][1] = "randomstring";
 
-    REQUIRE(!sjv.verify_json(input,rules));
-
+    REQUIRE(!jse.verify_json(input, rules));
 }
 
 TEST_CASE("file_01", "[validator]")
@@ -228,12 +225,12 @@ TEST_CASE("file_01", "[validator]")
     std::ifstream ifs2("../data/rules_01.json");
     json rules = json::parse(ifs2);
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = true;
+    jse.strict = true;
 
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
     INFO(s);
     REQUIRE(r);
 }
@@ -246,12 +243,12 @@ TEST_CASE("pushbox", "[validator]")
     std::ifstream ifs2("../data/default_rules.json");
     json rules = json::parse(ifs2);
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = true;
+    jse.strict = true;
 
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
     INFO(s);
     REQUIRE(r);
 }
@@ -264,12 +261,12 @@ TEST_CASE("screw", "[validator]")
     std::ifstream ifs2("../data/default_rules.json");
     json rules = json::parse(ifs2);
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = true;
+    jse.strict = true;
 
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
     INFO(s);
     REQUIRE(r);
 }
@@ -282,17 +279,18 @@ TEST_CASE("slingshot", "[validator]")
     std::ifstream ifs2("../data/default_rules.json");
     json rules = json::parse(ifs2);
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = true;
+    jse.strict = true;
 
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
     INFO(s);
     REQUIRE(r);
 }
 
-TEST_CASE("polyfem-data", "[validator]"){
+TEST_CASE("polyfem-data", "[validator]")
+{
     std::ifstream ifs2("../data/default_rules.json");
     json rules = json::parse(ifs2);
 
@@ -300,17 +298,19 @@ TEST_CASE("polyfem-data", "[validator]"){
     std::string ext(".json");
     for (auto &p : std::filesystem::recursive_directory_iterator(path))
     {
-        if (p.path().extension() == ext){
-            if(p.path().stem().string()=="common") continue;
+        if (p.path().extension() == ext)
+        {
+            if (p.path().stem().string() == "common")
+                continue;
             INFO(p.path().string());
             std::ifstream ifs1(p.path().string());
             json input = json::parse(ifs1);
-            sjv::SJV sjv;
+            JSE jse;
 
-            sjv.strict = true;
+            jse.strict = true;
 
-            bool r = sjv.verify_json(input,rules); 
-            std:: string s = sjv.log2str();
+            bool r = jse.verify_json(input, rules);
+            std::string s = jse.log2str();
             INFO(s);
             REQUIRE(r);
         }
@@ -318,17 +318,17 @@ TEST_CASE("polyfem-data", "[validator]"){
 }
 TEST_CASE("simple", "[inject]")
 {
-    json input = R"( 
+    json input = R"(
         {
             "string1": "teststring",
-            "geometry": 
+            "geometry":
             {
                 "nested": 3
             }
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -360,30 +360,30 @@ TEST_CASE("simple", "[inject]")
         ]
         )"_json;
 
-    json output = R"( 
+    json output = R"(
         {
             "string1": "teststring",
-            "geometry": 
+            "geometry":
             {
                 "nested": 3
             },
-            "other": 
+            "other":
             {
                 "nested": 3
             }
         }
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = false;
+    jse.strict = false;
 
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
     INFO(s);
     REQUIRE(r);
 
-    json return_json = sjv.inject_defaults(input,rules); 
+    json return_json = jse.inject_defaults(input, rules);
 
     INFO(return_json);
     REQUIRE(return_json == output);
@@ -391,9 +391,9 @@ TEST_CASE("simple", "[inject]")
 
 TEST_CASE("list", "[inject]")
 {
-    json input = R"( 
+    json input = R"(
         {
-            "list1": 
+            "list1":
             [
                 {
                     "count": 0,
@@ -406,7 +406,7 @@ TEST_CASE("list", "[inject]")
         }
         )"_json;
 
-    json rules = R"( 
+    json rules = R"(
         [
         {
             "pointer": "/",
@@ -435,9 +435,9 @@ TEST_CASE("list", "[inject]")
         ]
         )"_json;
 
-    json output = R"( 
+    json output = R"(
         {
-            "list1": 
+            "list1":
             [
                 {
                     "count": 0,
@@ -451,16 +451,16 @@ TEST_CASE("list", "[inject]")
         }
         )"_json;
 
-    sjv::SJV sjv;
+    JSE jse;
 
-    sjv.strict = false;
+    jse.strict = false;
 
-    bool r = sjv.verify_json(input,rules); 
-    std:: string s = sjv.log2str();
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
     INFO(s);
     REQUIRE(r);
 
-    json return_json = sjv.inject_defaults(input,rules); 
+    json return_json = jse.inject_defaults(input, rules);
 
     INFO(return_json);
     REQUIRE(return_json == output);

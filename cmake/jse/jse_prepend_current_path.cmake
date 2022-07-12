@@ -1,4 +1,4 @@
-function(sjv_prepend_current_path SOURCE_FILES)
+function(jse_prepend_current_path SOURCE_FILES)
   # Use recursive substitution to expand SOURCE_FILES
   unset(MODIFIED)
   foreach(SOURCE_FILE IN ITEMS ${${SOURCE_FILES}})
