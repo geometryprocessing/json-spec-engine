@@ -2,3 +2,6 @@ build/**
 .ipynb_checkpoints/
 __pycache__
 .vscode/
+*.pvd
+*.vtu
+*.vtm
