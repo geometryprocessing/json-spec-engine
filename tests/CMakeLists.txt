@@ -20,6 +20,8 @@ target_link_libraries(unit_tests PUBLIC jse::jse)
 include(jse_warnings)
 target_link_libraries(unit_tests PRIVATE jse::warnings)
 
+target_compile_definitions(unit_tests PRIVATE JSE_TEST_ROOT="${CMAKE_SOURCE_DIR}/data")
+
 if(POLYSOLVE_WITH_SANITIZERS)
 	add_sanitizers(unit_tests)
 endif()

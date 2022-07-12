@@ -10,6 +10,8 @@
 
 using namespace jse;
 
+const std::string root_path = JSE_TEST_ROOT;
+
 TEST_CASE("single_rule", "[validator]")
 {
     INFO("test1.");
@@ -101,7 +103,7 @@ TEST_CASE("file_type", "[validator]")
 {
     json input = R"(
         {
-            "file1": "CMakeCach.txt"
+            "file1": "dummi.txt"
         }
         )"_json;
 
@@ -124,7 +126,7 @@ TEST_CASE("file_type", "[validator]")
     JSE jse;
     bool b;
 
-    jse.cwd = std::filesystem::current_path();
+    jse.cwd = root_path;
     jse.strict = true;
     jse.skip_file_check = false;
     b = jse.verify_json(input, rules);
@@ -132,7 +134,7 @@ TEST_CASE("file_type", "[validator]")
     INFO(jse.log2str());
     REQUIRE(!b);
 
-    input["file1"] = "CMakeCache.txt";
+    input["file1"] = "dummy.txt";
 
     b = jse.verify_json(input, rules);
     INFO(jse.log2str());
@@ -219,10 +221,10 @@ TEST_CASE("type_object", "[validator]")
 
 TEST_CASE("file_01", "[validator]")
 {
-    std::ifstream ifs1("../data/input_01.json");
+    std::ifstream ifs1(root_path + "/input_01.json");
     json input = json::parse(ifs1);
 
-    std::ifstream ifs2("../data/rules_01.json");
+    std::ifstream ifs2(root_path + "/rules_01.json");
     json rules = json::parse(ifs2);
 
     JSE jse;
@@ -237,10 +239,10 @@ TEST_CASE("file_01", "[validator]")
 
 TEST_CASE("pushbox", "[validator]")
 {
-    std::ifstream ifs1("../data/push_box.json");
+    std::ifstream ifs1(root_path + "/push_box.json");
     json input = json::parse(ifs1);
 
-    std::ifstream ifs2("../data/default_rules.json");
+    std::ifstream ifs2(root_path + "/default_rules.json");
     json rules = json::parse(ifs2);
 
     JSE jse;
@@ -255,10 +257,10 @@ TEST_CASE("pushbox", "[validator]")
 
 TEST_CASE("screw", "[validator]")
 {
-    std::ifstream ifs1("../data/screw.json");
+    std::ifstream ifs1(root_path + "/screw.json");
     json input = json::parse(ifs1);
 
-    std::ifstream ifs2("../data/default_rules.json");
+    std::ifstream ifs2(root_path + "/default_rules.json");
     json rules = json::parse(ifs2);
 
     JSE jse;
@@ -273,10 +275,10 @@ TEST_CASE("screw", "[validator]")
 
 TEST_CASE("slingshot", "[validator]")
 {
-    std::ifstream ifs1("../data/sling_shots.json");
+    std::ifstream ifs1(root_path + "/sling_shots.json");
     json input = json::parse(ifs1);
 
-    std::ifstream ifs2("../data/default_rules.json");
+    std::ifstream ifs2(root_path + "/default_rules.json");
     json rules = json::parse(ifs2);
 
     JSE jse;
@@ -291,10 +293,10 @@ TEST_CASE("slingshot", "[validator]")
 
 TEST_CASE("polyfem-data", "[validator]")
 {
-    std::ifstream ifs2("../data/default_rules.json");
+    std::ifstream ifs2(root_path + "/default_rules.json");
     json rules = json::parse(ifs2);
 
-    std::string path("../data/polyfem-data-jsons");
+    std::string path(root_path + "/polyfem-data-jsons");
     std::string ext(".json");
     for (auto &p : std::filesystem::recursive_directory_iterator(path))
     {
