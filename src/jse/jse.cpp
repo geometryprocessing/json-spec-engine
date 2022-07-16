@@ -47,7 +47,7 @@ namespace jse
 
     bool JSE::verify_json(const string &pointer, json &input, const json &rules)
     {
-        // if (pointer == "/list1/*")
+        // if (pointer == "/common")
         //     std::cout << "gotcha" << std::endl;
         // Find all rules that apply for the input node
         // TODO: accelerate this
@@ -186,6 +186,7 @@ namespace jse
     };
     bool JSE::verify_rule(const json &input, const json &rule)
     {
+        // std::cout << "Verifying " << input << std::endl;
         string type = rule.at("type");
         if (type == "list")
             return verify_rule_list(input, rule);
@@ -226,7 +227,7 @@ namespace jse
                 return false;
         }
 
-        if (rule.contains("extensions"))
+        if (!skip_file_check && rule.contains("extensions"))
         {
             std::string ext = p.extension();
             int count = 0;

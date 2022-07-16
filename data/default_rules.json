@@ -119,7 +119,7 @@
     {
         "pointer": "/geometry/*/transformation/translation",
         "type": "list",
-        "default": null,
+        "default": [],
         "doc": "Translate, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
@@ -794,31 +794,31 @@
     {
         "pointer": "/materials/*/id",
         "type":"int",
-        "default": "all",
+        "default": 0,
         "doc":"id"
     },
     {
         "pointer": "/materials/*/E",
         "type":"float",
-        "default":"-9999",
+        "default":-9999,
         "doc":"Young's modulus"
     },
     {
         "pointer": "/materials/*/nu",
         "type":"float",
-        "default":"-9999",
+        "default":-9999,
         "doc":"Poisson ratio"
     },
     {
         "pointer": "/materials/*/rho",
         "type":"float",
-        "default":"-9999",
+        "default":-9999,
         "doc":"Density"
     },
     {
         "pointer": "/materials/*/density",
         "type":"float",
-        "default":"-9999",
+        "default":-9999,
         "doc":"Density"
     },
     {
@@ -829,13 +829,13 @@
     {
         "pointer": "/materials/*/mu",
         "type":"float",
-        "default":"-9999",
+        "default":-9999,
         "doc":"//TODO"
     },
     {
         "pointer": "/materials/*/lambda",
         "type":"float",
-        "default":"-9999",
+        "default":-9999,
         "doc":"//TODO"
     },
     {
