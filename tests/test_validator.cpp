@@ -339,6 +339,10 @@ TEST_CASE("simple", "[inject]")
             "optional":["geometry","other"]
         },
         {
+            "pointer": "/string1",
+            "type": "string"
+        },
+        {
             "pointer": "/geometry",
             "type": "object",
             "default": null,
@@ -351,7 +355,8 @@ TEST_CASE("simple", "[inject]")
         },
         {
             "pointer": "/other",
-            "type": "int",
+            "type": "object",
+            "optional": ["nested"],
             "default": null
         },
         {
@@ -402,7 +407,7 @@ TEST_CASE("list", "[inject]")
                     "other": 1
                 },
                 {
-                    "count": 0
+                    "count": 5
                 }
             ]
         }
@@ -446,8 +451,115 @@ TEST_CASE("list", "[inject]")
                     "other": 1
                 },
                 {
+                    "count": 5,
+                    "other": 2
+                }
+            ]
+        }
+        )"_json;
+
+    JSE jse;
+
+    jse.strict = false;
+
+    bool r = jse.verify_json(input, rules);
+    std::string s = jse.log2str();
+    INFO(s);
+    REQUIRE(r);
+
+    json return_json = jse.inject_defaults(input, rules);
+
+    INFO(return_json);
+    REQUIRE(return_json == output);
+}
+
+TEST_CASE("polymorphism", "[inject]")
+{
+    json input = R"(
+        {
+            "list1":
+            [
+                {
+                    "count": 0,
+                    "other": 1
+                },
+                {
+                    "count": 0
+                },
+                {
+                    "othertype": "ciao"
+                },
+                {
+                    "othertype": "ciao2",
+                    "otheroptional": "donotchangethis"
+                }
+            ]
+        }
+        )"_json;
+
+    json rules = R"(
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["list1"]
+        },
+        {
+            "pointer": "/list1",
+            "type": "list"
+        },
+        {
+            "pointer": "/list1/*",
+            "type": "object",
+            "required": ["count"],
+            "optional": ["other"]
+        },
+        {
+            "pointer": "/list1/*/count",
+            "type": "int"
+        },
+        {
+            "pointer": "/list1/*/other",
+            "type": "int",
+            "default": 2
+        },
+        {
+            "pointer": "/list1/*",
+            "type": "object",
+            "required": ["othertype"],
+            "optional": ["otheroptional"]
+        },
+        {
+            "pointer": "/list1/*/othertype",
+            "type": "string"
+        },
+        {
+            "pointer": "/list1/*/otheroptional",
+            "type": "string",
+            "default": "defaultstring"
+        }
+        ]
+        )"_json;
+
+    json output = R"(
+        {
+            "list1":
+            [
+                {
+                    "count": 0,
+                    "other": 1
+                },
+                {
                     "count": 0,
                     "other": 2
+                },
+                {
+                    "othertype": "ciao",
+                    "otheroptional": "defaultstring"
+                },
+                {
+                    "othertype": "ciao2",
+                    "otheroptional": "donotchangethis"
                 }
             ]
         }

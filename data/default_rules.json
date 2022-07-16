@@ -800,25 +800,25 @@
     {
         "pointer": "/materials/*/E",
         "type":"float",
-        "default":"//TODO",
+        "default":"-9999",
         "doc":"Young's modulus"
     },
     {
         "pointer": "/materials/*/nu",
         "type":"float",
-        "default":"//TODO",
+        "default":"-9999",
         "doc":"Poisson ratio"
     },
     {
         "pointer": "/materials/*/rho",
         "type":"float",
-        "default":"//TODO",
+        "default":"-9999",
         "doc":"Density"
     },
     {
         "pointer": "/materials/*/density",
         "type":"float",
-        "default":"//TODO",
+        "default":"-9999",
         "doc":"Density"
     },
     {
@@ -829,13 +829,13 @@
     {
         "pointer": "/materials/*/mu",
         "type":"float",
-        "default":"//TODO",
+        "default":"-9999",
         "doc":"//TODO"
     },
     {
         "pointer": "/materials/*/lambda",
         "type":"float",
-        "default":"//TODO",
+        "default":"-9999",
         "doc":"//TODO"
     },
     {

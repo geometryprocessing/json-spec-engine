@@ -14,54 +14,22 @@ namespace jse
     bool JSE::verify_json(const json &input, const json &rules)
     {
         log.clear();
-        return verify_json("/", input, rules);
+        json input_copy = input;
+        return verify_json("/", input_copy, rules);
     };
 
+    
     json JSE::inject_defaults(const json &input, const json &rules)
     {
-        // The code below assumes that the input satisfies the rules
-        assert(verify_json(input, rules));
+        log.clear();
+        json input_copy = input;
+        bool b = verify_json("/", input_copy, rules);
+        assert(b); // Make sure the original file is valid
 
-        // Find all the default rules
-        json default_rules = collect_default_rules(rules);
+        // Check that the new file, after adding defaults, is also valid
+        //assert(verify_json(input_copy, rules));
 
-        // Flatten the input
-        json flat = input.flatten();
-        json out_flat = flat;
-
-        // For each rule, go over all entries of a flattened input
-        for (auto rule : default_rules)
-        {
-            for (auto e : flat.items())
-            {
-                // If the pointer matches a strict subset of it, add it to the flattened
-                std::tuple<bool, string> subset = is_subset_pointer(e.key(), string(rule["pointer"]));
-                if (std::get<0>(subset))
-                    if (!out_flat.contains(std::get<1>(subset)))
-                        out_flat[std::get<1>(subset)] = rule["default"];
-
-                // Try it also without the last entry to capture object types which are empty
-                string key_parent = e.key().substr(0, e.key().find_last_of("/\\"));
-
-                subset = is_subset_pointer(key_parent, string(rule["pointer"]));
-                if (std::get<0>(subset))
-                    if (!out_flat.contains(std::get<1>(subset)))
-                        out_flat[std::get<1>(subset)] = rule["default"];
-            }
-            // Special case as "/" is not inserted in the flat representation
-            std::tuple<bool, string> subset = is_subset_pointer("/", string(rule["pointer"]));
-            if (std::get<0>(subset))
-                if (!out_flat.contains(std::get<1>(subset)))
-                    out_flat[std::get<1>(subset)] = rule["default"];
-        }
-
-        // Unflatten the input
-        json output = out_flat.unflatten();
-
-        // Certify the validity of the final file
-        assert(verify_json(input, rules));
-
-        return output;
+        return input_copy;
     };
 
     std::string JSE::log2str()
@@ -77,9 +45,9 @@ namespace jse
 
     //////////// PRIVATE
 
-    bool JSE::verify_json(const string &pointer, const json &input, const json &rules)
+    bool JSE::verify_json(const string &pointer, json &input, const json &rules)
     {
-        // if (pointer == "/geometry/*/surface_selection/*")
+        // if (pointer == "/list1/*")
         //     std::cout << "gotcha" << std::endl;
         // Find all rules that apply for the input node
         // TODO: accelerate this
@@ -178,11 +146,37 @@ namespace jse
                     return false;
             }
 
+        // If the dictionary is valid and has optional fields, add defaults for the optional fields
+        
+        if (input.is_object() || input.is_null()) // Note: null fields might be objects, and thus might have optional fields
+            if (single_matched_rule.contains("optional")) // the object has a list of optional
+            {
+                // std::cout << "Before adding: " << input << std::endl;
+                for (auto &i : single_matched_rule["optional"]) // for each optional field
+                    if (!input.contains(i)) // if not already in the object
+                    {
+                        string new_pointer = (pointer == "/" ? "" : pointer) + "/" + string(i);
+                        json defaults = collect_default_rules(new_pointer, rules); // Find the default
+                        if (defaults.size() != 1)
+                        {
+                            log.push_back(log_item("error", "Inconsistent specifications: " + new_pointer + " is an optional field with " + std::to_string(defaults.size()) + " default values."));
+                            return false;
+                        }
+                        input[string(i)] = defaults[0]["default"];
+
+                        // Let's validate/inject the default subtree
+                        if (!verify_json(new_pointer, input[string(i)], rules))
+                            return false;
+
+                    }
+                // std::cout << "After adding: " << input << std::endl;
+            }
+
         // In case of a list
         // All the elements in the list must pass the test
         if (input.is_array())
         {
-            for (auto i : input)
+            for (auto& i : input)
                 if (!verify_json((pointer == "/" ? "" : pointer) + "/*", i, rules))
                     return false;
         }
@@ -314,7 +308,7 @@ namespace jse
     {
         assert(rule.at("type") == "object");
 
-        if (!input.is_object())
+        if (!input.is_object() && !input.is_null())
             return false;
 
         if (rule.contains("required"))

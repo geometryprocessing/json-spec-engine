@@ -36,11 +36,8 @@ namespace jse
         std::vector<log_item> log;
 
     private:
-        // enriches a given json with default values
-        void inject_defaults(const string &pointer, const json &input, const json &rules, json &output);
-
         // Verify a node pointed by
-        bool verify_json(const string &pointer, const json &input, const json &rules);
+        bool verify_json(const string &pointer, json &input, const json &rules);
 
         // Dispatcher for rule verification
         bool verify_rule(const json &input, const json &rule);
