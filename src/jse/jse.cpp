@@ -229,7 +229,7 @@ namespace jse
 
         if (!skip_file_check && rule.contains("extensions"))
         {
-            std::string ext = p.extension();
+            std::string ext = p.extension().string();
             int count = 0;
             for (auto e : rule["extensions"])
                 if (e == ext)
