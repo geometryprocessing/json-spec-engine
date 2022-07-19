@@ -8,6 +8,11 @@ import pydot
 with open('data/default_rules.json')as fp:
     rules = json.load(fp)
 
+def getter(contain, key):
+    if key not in contain:
+        return []
+    return contain[key]
+
 def parse_tree(rules, mark_required = False):
     tree = dict()
     for r in rules:
@@ -41,7 +46,7 @@ def rename(node):
             continue
         if k in rename.used_names:
             rename.used_names[k] += 1
-            node[k+' '*(used_names[k])] = v
+            node[k+' '*(rename.used_names[k])] = v
             node.pop(k)
         else:
             rename.used_names[k] = 0
