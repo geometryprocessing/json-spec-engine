@@ -112,7 +112,7 @@ Optional parameters:
 * min: number
 * max: number
 
-### type: int 
+### "type": "int" 
 
 The entry must be an integer number, and optionally within a given range.
 
@@ -120,25 +120,25 @@ Optional parameters:
 * min: number
 * max: number
 
-### type: file
+### "type": "file"
 
 The entry must contain a valid path to a file that exists on the filesystem. Optionally, it is possible to specify valid extensions as a list of strings.
 
 Optional parameters: 
 * extensions: [".txt",".msh"]
 
-### type: folder
+### "type": "folder"
 
 The entry must contain a valid path to a folder that exists on the filesystem.
 
-### type: string
+### "type": "string"
 
 The entry must be a string. Optionally, it is possible to restrict the valid strings to a set of predefined ones.
 
 Optional parameters: 
 * options: ["these","are","options"]
 
-### type: list
+### "type": "list"
 
 The entry must be a list. Optionally, it is possible to restrict the lenght of the list.
 
@@ -146,7 +146,7 @@ Optional parameters:
 * min: minimal size
 * max: maximal size
 
-### type: bool
+### "type": "bool"
 
 The entry must be a boolean value.
 
