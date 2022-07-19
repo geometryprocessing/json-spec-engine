@@ -163,6 +163,7 @@ jse.boxing_primitive  // DEFAULT: true - always try to convert any type t to a l
 
 ## Authors
 Zachary Ferguson,
+Zhongshi Jiang,
 Teseo Schneider,
 Daniele Panozzo
 

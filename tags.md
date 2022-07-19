@@ -24,6 +24,7 @@
 
 * required: list of fields required for this object to be valid
 * optional: list of fields that are optional. Every optional field must have at least one rule with a default
+* type-name: the object must have a type field with the same name
 
 ## list
 
