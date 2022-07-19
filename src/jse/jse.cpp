@@ -18,7 +18,6 @@ namespace jse
         return verify_json("/", input_copy, rules);
     };
 
-    
     json JSE::inject_defaults(const json &input, const json &rules)
     {
         log.clear();
@@ -27,7 +26,7 @@ namespace jse
         assert(b); // Make sure the original file is valid
 
         // Check that the new file, after adding defaults, is also valid
-        //assert(verify_json(input_copy, rules));
+        // assert(verify_json(input_copy, rules));
 
         return input_copy;
     };
@@ -147,13 +146,13 @@ namespace jse
             }
 
         // If the dictionary is valid and has optional fields, add defaults for the optional fields
-        
-        if (input.is_object() || input.is_null()) // Note: null fields might be objects, and thus might have optional fields
+
+        if (input.is_object() || input.is_null())         // Note: null fields might be objects, and thus might have optional fields
             if (single_matched_rule.contains("optional")) // the object has a list of optional
             {
                 // std::cout << "Before adding: " << input << std::endl;
                 for (auto &i : single_matched_rule["optional"]) // for each optional field
-                    if (!input.contains(i)) // if not already in the object
+                    if (!input.contains(i))                     // if not already in the object
                     {
                         string new_pointer = (pointer == "/" ? "" : pointer) + "/" + string(i);
                         json defaults = collect_default_rules(new_pointer, rules); // Find the default
@@ -162,12 +161,14 @@ namespace jse
                             log.push_back(log_item("error", "Inconsistent specifications: " + new_pointer + " is an optional field with " + std::to_string(defaults.size()) + " default values."));
                             return false;
                         }
-                        input[string(i)] = defaults[0]["default"];
+                        if (defaults[0]["default"] != "skip")
+                        {
+                            input[string(i)] = defaults[0]["default"];
 
-                        // Let's validate/inject the default subtree
-                        if (!verify_json(new_pointer, input[string(i)], rules))
-                            return false;
-
+                            // Let's validate/inject the default subtree
+                            if (!verify_json(new_pointer, input[string(i)], rules))
+                                return false;
+                        }
                     }
                 // std::cout << "After adding: " << input << std::endl;
             }
@@ -176,7 +177,7 @@ namespace jse
         // All the elements in the list must pass the test
         if (input.is_array())
         {
-            for (auto& i : input)
+            for (auto &i : input)
                 if (!verify_json((pointer == "/" ? "" : pointer) + "/*", i, rules))
                     return false;
         }
@@ -316,6 +317,10 @@ namespace jse
             for (auto e : rule["required"])
                 if (!input.contains(string(e)))
                     return false;
+
+        if (rule.contains("type_name"))
+            if (!input.contains("type") || input["type"] != rule["type_name"])
+                return false;
 
         return true;
     };
