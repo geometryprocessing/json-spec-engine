@@ -234,7 +234,7 @@
 			</div>
 		</div>
 		% endif
-		% if r['type'] == "string": ## Bool
+		% if r['type'] == "string": ## String
 		<div class="card">
 			<div class="card-header">
 				<div class="container">
@@ -244,7 +244,10 @@
 							<p class="text-primary">${r['pointer_short']}</p>
 						</div>
 						<div class="col-sm">
-							Boolean
+							String
+							% if "options" in r:
+							(${r["options"]})
+							% endif
 							% if "default" in r:
 							[${r["default"]}]
 							% endif
