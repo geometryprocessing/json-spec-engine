@@ -30,8 +30,8 @@
       				</h5>
     			</div>
     			<div id="collapse${local_count}" class="collapse hide" aria-labelledby="heading${local_count}" data-parent="#accordion${local_count}">
-					% for r in rs:
-					${make_rule(r=rs[0])}
+					% for rule in rs:
+					${make_rule(r=rule)}
 					% endfor
     			</div>
   			</div>
