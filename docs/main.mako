@@ -40,7 +40,6 @@
   			<div class="card">
     			<div class="card-header" id="heading${local_count}">
       				<h5 class="mb-0">
-						${clip_button(clip_text=rs[0]['pointer_last'])}
 						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse${local_count}" aria-expanded="true" aria-controls="collapse${local_count}">
 						<h4>${rs[0]['pointer']}</h4>
 						</button>
@@ -73,17 +72,29 @@
 		<div id="accordion${local_count}">
   			<div class="card">
     			<div class="card-header" id="heading${local_count}">
-      				<h5 class="mb-0">
-						${clip_button(clip_text=r['pointer_last'])}
-						<button class="btn btn-link" data-toggle="collapse" data-target="#collapse${local_count}" aria-expanded="true" aria-controls="collapse${local_count}">
-						<h4>${r['pointer_short']}</h4>
-						</button>
-						<code>Object</code>
-						${"(Type: " + r["type_name"] + ")" if "type_name" in r else ""}
-						% if "default" in r:
-						= ${r["default"]}
-						% endif
-      				</h5>
+
+
+					<div class="container">
+					<h5>
+						<div class="row align-items-start">
+							<div class="auto">
+								<button class="btn btn-link" data-toggle="collapse" data-target="#collapse${local_count}" aria-expanded="true" aria-controls="collapse${local_count}">
+								<h4>${r['pointer_short']}</h4>
+								</button>
+							</div>
+							<div class="col-sm">
+								<code>Object</code>
+								${"(Type: " + r["type_name"] + ")" if "type_name" in r else ""}
+								% if "default" in r:
+								= ${r["default"]}
+								% endif
+							</div>
+							<div class="auto">
+							${clip_button(clip_text=r['pointer_last'])}
+							</div>
+						</div>
+					</h5>
+					</div>
 					${r['doc']}
     			</div>
     			<div id="collapse${local_count}" class="collapse hide" aria-labelledby="heading${local_count}" data-parent="#accordion${local_count}">
