@@ -7,9 +7,16 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 <style>
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
 .row > * {
 	width: auto !important;
 }
+
 body.dark {
 	--bs-body-bg: var(--bs-dark);
 	--bs-body-color: var(--bs-light);
@@ -29,13 +36,6 @@ body.dark button.btn {
 
 body.dark button.btn.btn-link {
 	--bs-btn-color: var(--bs-link-color);
-}
-
-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
 }
 
 #darkmode, #lightmode {
