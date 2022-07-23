@@ -7,3 +7,5 @@ __pycache__
 *.vtm
 bin*
 build*
+docs/index.html
+docs/out.html
