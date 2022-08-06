@@ -95,7 +95,7 @@ endif()
 
 # Json (MIT)
 include(json)
-target_link_libraries(jse PUBLIC nlohmann::json)
+target_link_libraries(jse PUBLIC nlohmann_json::nlohmann_json)
 
 ################################################################################
 # Compiler options
