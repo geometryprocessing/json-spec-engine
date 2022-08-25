@@ -35,7 +35,10 @@ if __name__ == "__main__":
     # print(input)
 
     print("02 - Templating")
-    mako_file = pathlib.Path(__file__).parent.absolute() / "main.mako"
+    if args.output.endswith(".md"):
+        mako_file = pathlib.Path(__file__).parent.absolute() / "main.md.mako"
+    else:
+        mako_file = pathlib.Path(__file__).parent.absolute() / "main.html.mako"
     mako_template = Template(filename=str(mako_file))
     body = mako_template.render(
         title=args.title, ijson=json_navigator(input), attributes={"count": 0})
