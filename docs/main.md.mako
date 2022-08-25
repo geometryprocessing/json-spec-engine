@@ -1,10 +1,12 @@
 ## _*_ coding: utf-8 _*_
+---
+template: no_toc.html
+---
 <!--Automatically generated using JSON Spec Engine-->
 <%def name="render_pointer(pointer_name, prefix)">
 ${make_rules(rs=ijson.rules_from_pointer(pointer_name), prefix=prefix)}
 </%def>
-##
-##
+## ============================================================================
 <%def name="make_rules(rs, prefix)">
 <%
 if len(rs) > 0:
@@ -13,29 +15,25 @@ if len(rs) > 0:
         tmp = rs[0]['pointer'].replace('/*','')
         rs[0]['pointer_last'] = tmp.rsplit('/', 1)[-1]
 %>
-##
 % if len(rs) == 1: ## single rules for a pointer use a cell
-${make_rule(r=rs[0], prefix=prefix)}
-% endif
-##
-% if len(rs) > 1: ## multiple rules use a collapsible block
-${prefix}${"!!!" if len(prefix) == 0 else "???"} summary "`${rs[0]['pointer']}`"
+${make_rule(r=rs[0], prefix=prefix, tag="!!! json-spec" if len(prefix) == 0 else "??? json-spec")}
+% elif len(rs) > 1: ## multiple rules use a collapsible block
+${prefix}??? json-spec "`${rs[0]['pointer']}`"
 ${prefix}    ```
 ${prefix}    ${rs[0]['pointer']}
 ${prefix}    ```
+## ${prefix}    ${"##"} Description
+## ${prefix}    ${rs[0]['doc']}
 % for rule in rs:
-${make_rule(r=rule, prefix=prefix + "    ")}
+${make_rule(r=rule, prefix=prefix + "    ", tag="===")}
 % endfor
 % endif
 </%def>
-##
-##
-<%def name="make_rule(r, prefix)">
+## ============================================================================
+<%def name="make_rule(r, prefix, tag)">
 <%
 if not 'doc' in r:
-    r['doc'] = '<span class="todo">FIXME:</span> Missing documentation in the specification'
-if r["doc"] == "TODO":
-    r["doc"] = '<span class="todo">TODO</span>'
+    r['doc'] = 'FIXME: Missing documentation in the specification.'
 r['pointer_last'] = r['pointer'].rsplit('/', 1)[-1]
 if r['pointer_last'] == '*':
     tmp = r['pointer'].replace('/*','')
@@ -43,62 +41,39 @@ if r['pointer_last'] == '*':
 r['pointer_short'] = r['pointer']
 %>
 ## ----------------------------------------------------------------------------
-% if r['type'] == "object": ## Object
-${prefix}${"!!!" if len(prefix) == 0 else "???"} summary "${r.get("type_name", f"`{r['pointer_short']}` (`{r['type']}`)")}"
+% if r['type'] == "list": ## List
+${prefix}${tag} "${r.get("type_name", f"`{r['pointer_short']}` (`{r['type']}`)")}"
+% if tag != "===":
 ${prefix}    ```
 ${prefix}    ${r['pointer']}
 ${prefix}    ```
+%endif
 ${prefix}    ${"##"} Description
 ${prefix}    ${r['doc']}
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+${render_pointer(
+    pointer_name = (r['pointer']+'*') if r['pointer'] == '/' else (r['pointer']+'/'+'*'),
+    prefix = prefix + "    ")}
+## ----------------------------------------------------------------------------
+% else:
+${prefix}${tag} "${r.get("type_name", f"`{r['pointer_short']}` (`{r['type']}`)")}"
+% if tag != "===":
+${prefix}    ```
+${prefix}    ${r['pointer']}
+${prefix}    ```
+%endif
 % if "type_name" in r:
 ${prefix}
 ${prefix}    **Type**: ${r["type_name"]}
 % endif
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-% if "default" in r:
-${prefix}
-${prefix}    **Default**: ${repr(r["default"])}
-% endif
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-% if 'required' in r:
-${prefix}    ${"##"} Required
-% for fname in r['required']:
-${render_pointer(
-    pointer_name = (r['pointer']+fname) if r['pointer'] == '/' else (r['pointer']+'/'+fname),
-    prefix = prefix + "    ")}
-% endfor
-% endif
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-% if 'optional' in r:
-${prefix}    ${"##"} Optional
-% for fname in r['optional']:
-${render_pointer(
-    pointer_name = (r['pointer']+fname) if r['pointer'] == '/' else (r['pointer']+'/'+fname),
-    prefix = prefix + "    ")}
-% endfor
-% endif
-## ----------------------------------------------------------------------------
-% elif r['type'] == "list": ## List
-${render_pointer(
-    pointer_name = (r['pointer']+'*') if r['pointer'] == '/' else (r['pointer']+'/'+'*'),
-    prefix = prefix)}
-## ----------------------------------------------------------------------------
-% else:
-${prefix}${"!!!" if len(prefix) == 0 else "???"} summary "`${r['pointer_short']}` (`${r["type"]}`)"
-${prefix}    ```
-${prefix}    ${r['pointer']}
-${prefix}    ```
 ${prefix}    ${"##"} Description
 ${prefix}    ${r['doc']}
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-% if "min" in r or "max" in r:
-${prefix}
-${prefix}    **Range:** `(${r.get("min", "-inf")}, ${r.get("max", "inf")})`
-% endif
 % if "default" in r:
 ${prefix}
 ${prefix}    **Default**: `${repr(r["default"])}`
+% endif
+% if "min" in r or "max" in r:
+${prefix}
+${prefix}    **Range:** `[${r.get("min", "-inf")}, ${r.get("max", "inf")}]`
 % endif
 % if "extensions" in r:
 ${prefix}
@@ -107,6 +82,22 @@ ${prefix}    **Extensions:** `${r["extensions"]}`
 % if "options" in r:
 ${prefix}
 ${prefix}    **Options:** `${r["options"]}`
+% endif
+% if 'required' in r:
+${prefix}    ${"##"} Required
+% for fname in r['required']:
+${render_pointer(
+    pointer_name = (r['pointer']+fname) if r['pointer'] == '/' else (r['pointer']+'/'+fname),
+    prefix = prefix + "    ")}
+% endfor
+% endif
+% if 'optional' in r:
+${prefix}    ${"##"} Optional
+% for fname in r['optional']:
+${render_pointer(
+    pointer_name = (r['pointer']+fname) if r['pointer'] == '/' else (r['pointer']+'/'+fname),
+    prefix = prefix + "    ")}
+% endfor
 % endif
 % endif
 </%def>
