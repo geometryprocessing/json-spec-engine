@@ -89,9 +89,10 @@ namespace jse
             }
 
             std::stringstream s;
-            s << "No valid rules in this list:";
-            for (auto i : matching_rules)
-                s << i << std::endl;
+            s << "No rule matched for \"" << pointer << "\": " << input.dump(/*indent=*/4) << std::endl;
+            s << "No valid rules in this list:\n";
+            for (int i = 0; i < matching_rules.size(); i++)
+                s << i << ": " << matching_rules[i].dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
             return false;
         }
@@ -99,9 +100,10 @@ namespace jse
         if (count > 1)
         {
             std::stringstream s;
+            s << "Multiple rules matched for \"" << pointer << "\": " << input.dump(/*indent=*/4) << std::endl;
             s << "Multiple valid rules in this list, only one should be valid:";
-            for (auto i : matching_rules)
-                s << i << std::endl;
+            for (int i = 0; i < matching_rules.size(); i++)
+                s << i << ": " << matching_rules[i].dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
             return false;
         }
