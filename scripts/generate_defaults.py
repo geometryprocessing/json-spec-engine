@@ -41,9 +41,11 @@ def generate_defaults(spec, root="/"):
 
 def main():
     parser = argparse.ArgumentParser("Generate defaults.json from spec.json")
-    parser.add_argument("spec_path", help="Path to the JSON schema")
     parser.add_argument(
-        "--output", help="Path to the output file", default="defaults.json")
+        "-i,--input", dest="spec_path", help="Path to the JSON schema")
+    parser.add_argument(
+        "-o,--output", dest="output", help="Path to the output file",
+        default="defaults.json")
     args = parser.parse_args()
 
     with open(args.spec_path) as f:

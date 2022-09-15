@@ -1,7 +1,7 @@
 ## _*_ coding: utf-8 _*_
----
-template: no_toc.html
----
+## ---
+## template: no_toc.html
+## ---
 <!--Automatically generated using JSON Spec Engine-->
 <%def name="render_pointer(pointer_name, prefix)">
 ${make_rules(rs=ijson.rules_from_pointer(pointer_name), prefix=prefix)}
@@ -22,7 +22,7 @@ ${prefix}??? json-spec "`${rs[0]['pointer']}`"
 ${prefix}    ```
 ${prefix}    ${rs[0]['pointer']}
 ${prefix}    ```
-## ${prefix}    ${"##"} Description
+## ${prefix}    <h2>Description</h2>
 ## ${prefix}    ${rs[0]['doc']}
 % for rule in rs:
 ${make_rule(r=rule, prefix=prefix + "    ", tag="===")}
@@ -48,7 +48,7 @@ ${prefix}    ```
 ${prefix}    ${r['pointer']}
 ${prefix}    ```
 %endif
-${prefix}    ${"##"} Description
+${prefix}    <h2>Description</h2>
 ${prefix}    ${r['doc']}
 ${render_pointer(
     pointer_name = (r['pointer']+'*') if r['pointer'] == '/' else (r['pointer']+'/'+'*'),
@@ -65,7 +65,7 @@ ${prefix}    ```
 ${prefix}
 ${prefix}    **Type**: ${r["type_name"]}
 % endif
-${prefix}    ${"##"} Description
+${prefix}    <h2>Description</h2>
 ${prefix}    ${r['doc']}
 % if "default" in r:
 ${prefix}
@@ -84,7 +84,7 @@ ${prefix}
 ${prefix}    **Options:** `${r["options"]}`
 % endif
 % if 'required' in r:
-${prefix}    ${"##"} Required
+${prefix}    <h2>Required</h2>
 % for fname in r['required']:
 ${render_pointer(
     pointer_name = (r['pointer']+fname) if r['pointer'] == '/' else (r['pointer']+'/'+fname),
@@ -92,7 +92,7 @@ ${render_pointer(
 % endfor
 % endif
 % if 'optional' in r:
-${prefix}    ${"##"} Optional
+${prefix}    <h2>Optional</h2>
 % for fname in r['optional']:
 ${render_pointer(
     pointer_name = (r['pointer']+fname) if r['pointer'] == '/' else (r['pointer']+'/'+fname),
