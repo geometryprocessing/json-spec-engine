@@ -4,6 +4,7 @@
 #include <filesystem> // C++17
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace jse
@@ -46,6 +47,7 @@ namespace jse
 
     namespace
     {
+        // adds key after the provided pointer, correctly handling the json special case that root has an ending /
         std::string append_pointer(const std::string &pointer, const std::string &key)
         {
             if (pointer == "/")
@@ -53,12 +55,103 @@ namespace jse
             else
                 return pointer + "/" + key;
         }
+
+        // adds key before the provided pointer, correctly handling the json special case that root has an ending /
+        std::string prepend_pointer(const std::string &pointer, const std::string &key)
+        {
+            if (key == "/")
+                return pointer;
+            else
+                return key + "/" + pointer;
+        }
+
     } // namespace
+
+
+    // enriches a given json spec with included json specs
+    json JSE::inject_include(const json &rules)
+    {
+        std::vector<string> dirs = include_directories;
+        dirs.push_back(""); // adding default path
+
+        // max 10 levels of nesting to avoid infinite loops
+        json current = rules;
+
+        for (size_t x = 0; x < 10; x++)
+        {
+            // check if the rules have any include
+            bool include_present = false;
+            for (auto rule : current)
+                if (rule.at("type") == "include")
+                    include_present = true;
+            
+            // if there are no includes, return the current ones
+            if (!include_present)
+                return current;
+
+            json enriched;
+            // otherwise, do a round of replacement
+            for (auto rule : current)
+            {
+                // copy all rules that are not include
+                if (rule.at("type") != "include") 
+                {
+                    enriched.push_back(rule);
+                }
+                // if the rule is an include, expand the node with a copy of the included file
+                else
+                {
+                    bool replaced = false;
+                    // the include file could be in any of the include directories
+                    for (auto dir : dirs)
+                    {
+                        string spec_file = rule.at("spec_file");
+                        string f = dir + spec_file;
+                        // check if the file exists
+                        if (std::filesystem::is_regular_file(f))
+                        {
+                            std::ifstream ifs(f);
+                            json include_rules = json::parse(ifs);
+
+                            // loop over all rules to add the prefix
+                            for (auto i_rule : include_rules)
+                            {
+                                string prefix = rule.at("pointer");
+                                string pointer = i_rule.at("pointer");
+                                i_rule.at("pointer") = prepend_pointer(pointer,prefix);
+                            }
+
+                            // save modified rules
+                            for (auto i_rule : include_rules)
+                                enriched.push_back(i_rule);
+
+                            // one substitution is enough, give up the search over include dirs
+                            replaced = true;
+                            break;
+                        }
+
+                    }
+
+                    if (!replaced)
+                    {
+                        string pointer = rule.at("pointer");
+                        throw("Failed to replace the include rule: " + pointer);
+                        assert(replaced == true);
+                    }
+                }
+            }
+
+            // now that we replaced the include, copy it back to current
+            current = enriched;
+        }
+
+        throw("Reached maximal 10 levels of include recursion.");
+
+    }
+
 
     bool JSE::verify_json(const string &pointer, json &input, const json &rules)
     {
-        // if (pointer == "/common")
-        //     std::cout << "gotcha" << std::endl;
         // Find all rules that apply for the input node
         // TODO: accelerate this
         std::vector<json> matching_rules = collect_pointer(pointer, rules);
@@ -216,6 +309,8 @@ namespace jse
             return verify_rule_object(input, rule);
         else if (type == "bool")
             return verify_rule_bool(input, rule);
+        else if (type == "include")
+            return verify_rule_include(input, rule);
         else
         {
             log.push_back(log_item("error", "Unknown rule type " + type));
@@ -360,6 +455,14 @@ namespace jse
             return false;
 
         return true;
+    }
+
+    bool JSE::verify_rule_include(const json &input, const json &rule)
+    {
+        assert(rule.at("type") == "include");
+
+        // An include rule always fails, they should be processed first by the inject_include function
+        return false;
     }
 
     json JSE::collect_default_rules(const json &rules)

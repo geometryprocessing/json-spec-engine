@@ -150,15 +150,23 @@ Optional parameters:
 
 The entry must be a boolean value.
 
+### "type": "include"
+
+Mandatory parameter: 
+* spec_file: ["spec.json"]
+
+The entry must be valid with respect to the json spec provided in spec_file. spec_file can be a global path, or relative to the paths provided in the advanced option jse.include_directories
+
 ## Defaults
 
 Every rule associated with an optional parameter of an object must specify a default value, using the default field.
 
 # Advanced options
 ```cpp
-jse.strict            // DEFAULT: false - if strict == false, a json is valid even if it has entries not validated by a rule
-jse.skip_file_check   // DEFAULT: true - disable checking for existance of file and folders
-jse.boxing_primitive  // DEFAULT: true - always try to convert any type t to a list of t for the purpose of finding a valid rule
+jse.strict              // DEFAULT: false - if strict == false, a json is valid even if it has entries not validated by a rule
+jse.skip_file_check     // DEFAULT: true - disable checking for existance of file and folders
+jse.boxing_primitive    // DEFAULT: true - always try to convert any type t to a list of t for the purpose of finding a valid rule
+jse.include_directories // DEFAULT: empty - list of strings containing additional paths where json spec are possibly located
 ```
 
 ## Authors

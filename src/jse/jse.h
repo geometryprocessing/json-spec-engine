@@ -18,6 +18,9 @@ namespace jse
         // enriches a given json with default values
         json inject_defaults(const json &input, const json &rules);
 
+        // enriches a given json spec with included json specs
+        json inject_include(const json &rules);
+
         // log to string
         std::string log2str();
 
@@ -26,7 +29,13 @@ namespace jse
 
         // if strict == false, a json is valid even if it has entries not validated by a rule
         bool strict = false;
+
+        // do not check the existance of the file pointed in file nodes
         bool skip_file_check = true;
+
+        // additional directories which can be used for relative paths
+        std::vector<string> include_directories;
+
         // automatic boxing for primitive types
         // if all rules fail for a basic type, try boxing it once and try again
         bool boxing_primitive = true;
@@ -51,6 +60,7 @@ namespace jse
         bool verify_rule_object(const json &input, const json &rule);
         bool verify_rule_bool(const json &input, const json &rule);
         bool verify_rule_list(const json &input, const json &rule);
+        bool verify_rule_include(const json &input, const json &rule);
 
         // Collect all rules having a default
         json collect_default_rules(const json &rules);
