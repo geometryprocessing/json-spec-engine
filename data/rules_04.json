@@ -1,0 +1,12 @@
+[
+{
+    "pointer": "/",
+    "type": "include",
+    "spec_file": "rules_02.json"
+},
+{
+    "pointer": "/object1",
+    "type": "include",
+    "spec_file": "rules_02.json"
+}
+]

@@ -34,6 +34,7 @@ project(JSE
 option(JSE_WITH_SANITIZERS    "Enable sanitizers in compilation targets"   OFF)
 # Misc.
 option(JSE_WITH_TESTS         "Build unit-tests" ${JSE_TOPLEVEL_PROJECT})
+option(JSE_WITH_APP           "Compiles applications" ${JSE_TOPLEVEL_PROJECT})
 
 include(CMakeDependentOption)
 
@@ -120,4 +121,19 @@ if(JSE_WITH_TESTS)
     include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
 
     add_subdirectory(tests)
+endif()
+
+################################################################################
+# Applications
+################################################################################
+
+if(JSE_WITH_APP)
+
+add_executable(jse_app src/main.cpp)
+
+target_compile_options(jse_app PRIVATE "-rdynamic")
+target_link_libraries(jse_app PUBLIC
+    jse::jse
+)
+
 endif()

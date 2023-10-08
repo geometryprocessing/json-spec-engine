@@ -138,7 +138,7 @@ namespace jse
                     if (!replaced)
                     {
                         string pointer = rule.at("pointer");
-                        throw("Failed to replace the include rule: " + pointer);
+                        throw std::runtime_error("Failed to replace the include rule: " + pointer);
                         assert(replaced == true);
                     }
                 }
@@ -148,7 +148,7 @@ namespace jse
             current = enriched;
         }
 
-        throw("Reached maximal 10 levels of include recursion.");
+        throw std::runtime_error("Reached maximal 10 levels of include recursion.");
 
     }
 
