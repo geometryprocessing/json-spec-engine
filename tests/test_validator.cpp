@@ -227,25 +227,24 @@ TEST_CASE("include_rule", "[validator]")
             "pointer": "/",
             "type": "include",
             "spec_file": "rules_02.json"
+        },
+        {
+            "pointer": "/object1",
+            "type": "include",
+            "spec_file": "rules_02.json"
         }
         ]
         )"_json;
-        // ,
-        // {
-        //     "pointer": "/object1",
-        //     "type": "include",
-        //     "spec_file": "rules_02.json"
-        // }
-
-
-
 
     JSE jse;
     jse.include_directories.push_back(root_path);
     json new_rules = jse.inject_include(rules);
 
-    std::ifstream ifs2(root_path + "/rules_01.json");
+    std::ifstream ifs2(root_path + "/rules_03.json");
     json matching = json::parse(ifs2);
+
+    INFO(new_rules);
+    INFO(matching);
 
     INFO(jse.log2str());
     REQUIRE(new_rules == matching);

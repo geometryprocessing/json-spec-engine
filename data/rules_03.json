@@ -1,0 +1,22 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": ["field1"]
+    },
+    {
+        "pointer": "/field1",
+        "type": "float",
+        "min": 45
+    },
+    {
+        "pointer": "/object1",
+        "type": "object",
+        "required": ["field1"]
+    },
+    {
+        "pointer": "/object1/field1",
+        "type": "float",
+        "min": 45
+    }
+]

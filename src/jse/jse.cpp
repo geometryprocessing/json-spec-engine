@@ -61,8 +61,10 @@ namespace jse
         {
             if (key == "/")
                 return pointer;
+            else if (pointer == "/")
+                return key;
             else
-                return key + "/" + pointer;
+                return key + pointer;
         }
 
     } // namespace
@@ -81,7 +83,7 @@ namespace jse
         {
             // check if the rules have any include
             bool include_present = false;
-            for (auto rule : current)
+            for (const auto& rule : current)
                 if (rule.at("type") == "include")
                     include_present = true;
             
@@ -91,7 +93,7 @@ namespace jse
 
             json enriched;
             // otherwise, do a round of replacement
-            for (auto rule : current)
+            for (const auto& rule : current)
             {
                 // copy all rules that are not include
                 if (rule.at("type") != "include") 
@@ -103,10 +105,10 @@ namespace jse
                 {
                     bool replaced = false;
                     // the include file could be in any of the include directories
-                    for (auto dir : dirs)
+                    for (const auto& dir : dirs)
                     {
                         string spec_file = rule.at("spec_file");
-                        string f = dir + spec_file;
+                        string f = dir + "/" + spec_file;
                         // check if the file exists
                         if (std::filesystem::is_regular_file(f))
                         {
@@ -114,15 +116,16 @@ namespace jse
                             json include_rules = json::parse(ifs);
 
                             // loop over all rules to add the prefix
-                            for (auto i_rule : include_rules)
+                            for (auto& i_rule : include_rules)
                             {
                                 string prefix = rule.at("pointer");
                                 string pointer = i_rule.at("pointer");
-                                i_rule.at("pointer") = prepend_pointer(pointer,prefix);
+                                string new_pointer = prepend_pointer(pointer,prefix);
+                                i_rule.at("pointer") = new_pointer;
                             }
 
                             // save modified rules
-                            for (auto i_rule : include_rules)
+                            for (const auto& i_rule : include_rules)
                                 enriched.push_back(i_rule);
 
                             // one substitution is enough, give up the search over include dirs
