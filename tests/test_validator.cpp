@@ -219,6 +219,38 @@ TEST_CASE("type_object", "[validator]")
     REQUIRE(!jse.verify_json(input, rules));
 }
 
+TEST_CASE("include_rule", "[validator]")
+{
+    json rules = R"(
+        [
+        {
+            "pointer": "/",
+            "type": "include",
+            "spec_file": "rules_02.json"
+        },
+        {
+            "pointer": "/object1",
+            "type": "include",
+            "spec_file": "rules_02.json"
+        }
+        ]
+        )"_json;
+
+    JSE jse;
+    jse.include_directories.push_back(root_path);
+    json new_rules = jse.inject_include(rules);
+
+    std::ifstream ifs2(root_path + "/rules_03.json");
+    json matching = json::parse(ifs2);
+
+    INFO(new_rules);
+    INFO(matching);
+
+    INFO(jse.log2str());
+    REQUIRE(new_rules == matching);
+}
+
+
 TEST_CASE("file_01", "[validator]")
 {
     std::ifstream ifs1(root_path + "/input_01.json");
