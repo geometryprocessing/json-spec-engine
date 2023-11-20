@@ -1,6 +1,11 @@
 import argparse
 import json
 from collections import OrderedDict
+import pathlib
+
+import sys
+sys.path.append(str(pathlib.Path(__file__).parent))
+from inject_include import inject_include  # noqa
 
 
 def find_rules(spec, pointer):
@@ -12,11 +17,11 @@ def generate_defaults(spec, root="/"):
     rules = find_rules(spec, root)
 
     default_rule = list(filter(lambda rule: "default" in rule, rules))
-    assert(len(default_rule) <= 1)
+    assert (len(default_rule) <= 1)
 
     object_rules = list(filter(lambda rule: rule["type"] == "object", rules))
 
-    if(default_rule and default_rule[0]["default"] is not None and not object_rules):
+    if (default_rule and default_rule[0]["default"] is not None and not object_rules):
         return default_rule[0]["default"]
     else:
         for i, rule in enumerate(object_rules):
@@ -50,6 +55,9 @@ def main():
 
     with open(args.spec_path) as f:
         spec = json.load(f)
+
+    # TODO: Expose the include path as a parameter
+    spec = inject_include(spec, [pathlib.Path(args.spec_path).parent])
 
     defaults = generate_defaults(spec)
 

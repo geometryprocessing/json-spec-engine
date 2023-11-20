@@ -6,6 +6,10 @@ from unittest import skip
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+import sys
+sys.path.append(str(pathlib.Path(__file__).parents[1] / "scripts"))
+from inject_include import inject_include  # noqa
+
 
 class json_navigator:
     def __init__(self, ijson):
@@ -31,6 +35,9 @@ if __name__ == "__main__":
     print("01 - Loading specification")
     with open(args.input) as input_file:
         input = json.load(input_file)
+
+    # TODO: Expose the include path as a parameter
+    input = inject_include(input, [pathlib.Path(args.input).parent])
 
     # print(input)
 
