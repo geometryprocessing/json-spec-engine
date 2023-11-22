@@ -27,7 +27,13 @@ if __name__ == "__main__":
         "--output", "-o", help="Path to the output html file", required=True)
     parser.add_argument(
         "--title", "-t", help="Title", default="JSON Specification")
+    parser.add_argument(
+        "--include-dirs", nargs="+", help="Directories to search for includes",
+        default=None)
     args = parser.parse_args()
+
+    if args.include_dirs is None:
+        args.include_dirs = [pathlib.Path(args.spec_path).parent]
 
     # Template Lookup
     mylookup = TemplateLookup(directories=['.'])
@@ -36,8 +42,7 @@ if __name__ == "__main__":
     with open(args.input) as input_file:
         input = json.load(input_file)
 
-    # TODO: Expose the include path as a parameter
-    input = inject_include(input, [pathlib.Path(args.input).parent])
+    input = inject_include(input, args.include_dirs)
 
     # print(input)
 

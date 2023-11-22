@@ -51,13 +51,18 @@ def main():
     parser.add_argument(
         "-o,--output", dest="output", help="Path to the output file",
         default="defaults.json")
+    parser.add_argument(
+        "--include-dirs", nargs="+", help="Directories to search for includes",
+        default=None)
     args = parser.parse_args()
+
+    if args.include_dirs is None:
+        args.include_dirs = [pathlib.Path(args.spec_path).parent]
 
     with open(args.spec_path) as f:
         spec = json.load(f)
 
-    # TODO: Expose the include path as a parameter
-    spec = inject_include(spec, [pathlib.Path(args.spec_path).parent])
+    spec = inject_include(spec, args.include_dirs)
 
     defaults = generate_defaults(spec)
 
