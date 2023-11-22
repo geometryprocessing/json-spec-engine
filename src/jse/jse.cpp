@@ -69,7 +69,6 @@ namespace jse
 
     } // namespace
 
-
     // enriches a given json spec with included json specs
     json JSE::inject_include(const json &rules)
     {
@@ -83,20 +82,20 @@ namespace jse
         {
             // check if the rules have any include
             bool include_present = false;
-            for (const auto& rule : current)
+            for (const auto &rule : current)
                 if (rule.at("type") == "include")
                     include_present = true;
-            
+
             // if there are no includes, return the current ones
             if (!include_present)
                 return current;
 
             json enriched;
             // otherwise, do a round of replacement
-            for (const auto& rule : current)
+            for (const auto &rule : current)
             {
                 // copy all rules that are not include
-                if (rule.at("type") != "include") 
+                if (rule.at("type") != "include")
                 {
                     enriched.push_back(rule);
                 }
@@ -105,7 +104,7 @@ namespace jse
                 {
                     bool replaced = false;
                     // the include file could be in any of the include directories
-                    for (const auto& dir : dirs)
+                    for (const auto &dir : dirs)
                     {
                         string spec_file = rule.at("spec_file");
                         string f = dir + "/" + spec_file;
@@ -116,23 +115,22 @@ namespace jse
                             json include_rules = json::parse(ifs);
 
                             // loop over all rules to add the prefix
-                            for (auto& i_rule : include_rules)
+                            for (auto &i_rule : include_rules)
                             {
                                 string prefix = rule.at("pointer");
                                 string pointer = i_rule.at("pointer");
-                                string new_pointer = prepend_pointer(pointer,prefix);
+                                string new_pointer = prepend_pointer(pointer, prefix);
                                 i_rule.at("pointer") = new_pointer;
                             }
 
                             // save modified rules
-                            for (const auto& i_rule : include_rules)
+                            for (const auto &i_rule : include_rules)
                                 enriched.push_back(i_rule);
 
                             // one substitution is enough, give up the search over include dirs
                             replaced = true;
                             break;
                         }
-
                     }
 
                     if (!replaced)
@@ -149,9 +147,7 @@ namespace jse
         }
 
         throw std::runtime_error("Reached maximal 10 levels of include recursion.");
-
     }
-
 
     bool JSE::verify_json(const string &pointer, json &input, const json &rules)
     {
@@ -167,19 +163,16 @@ namespace jse
         }
 
         // Test all rules, one and only one must pass, otherwise throw exception
-        int count = 0;
-        json single_matched_rule;
-
-        for (auto i : matching_rules)
+        std::vector<json> verified_matching_rules;
+        for (auto r : matching_rules)
         {
-            if (verify_rule(input, i))
+            if (verify_rule(input, r))
             {
-                count++;
-                single_matched_rule = i;
+                verified_matching_rules.push_back(r);
             }
         }
 
-        if (count == 0)
+        if (verified_matching_rules.size() == 0)
         {
             // Before giving up, try boxing a primitive type
             if (boxing_primitive && !input.is_array())
@@ -199,16 +192,17 @@ namespace jse
             log.push_back(log_item("error", s.str()));
             return false;
         }
-        else if (count > 1)
+        else if (verified_matching_rules.size() > 1)
         {
             std::stringstream s;
             s << "Multiple rules matched for \"" << pointer << "\": " << input.dump(/*indent=*/4) << std::endl;
             s << "Multiple valid rules in this list, only one should be valid:";
-            for (int i = 0; i < matching_rules.size(); i++)
-                s << i << ": " << matching_rules[i].dump(/*indent=*/4) << "\n";
+            for (int i = 0; i < verified_matching_rules.size(); i++)
+                s << i << ": " << verified_matching_rules[i].dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
             return false;
         }
+        const json &single_matched_rule = verified_matching_rules.front();
 
         // If it passes and if it is a dictionary, then test all childrens
         if (input.is_object())
@@ -427,10 +421,24 @@ namespace jse
         if (!input.is_object() && !input.is_null())
             return false;
 
+        // Check that all required fields are present
         if (rule.contains("required"))
             for (auto e : rule["required"])
                 if (!input.contains(string(e)))
                     return false;
+
+        std::vector<std::string> keys;
+        keys.reserve((rule.contains("required") ? rule["required"].size() : 0)
+                     + (rule.contains("optional") ? rule["optional"].size() : 0));
+        if (rule.contains("required"))
+            keys.insert(keys.end(), rule["required"].begin(), rule["required"].end());
+        if (rule.contains("optional"))
+            keys.insert(keys.end(), rule["optional"].begin(), rule["optional"].end());
+
+        // Check that no extra fields are present
+        for (const auto &[key, value] : input.items())
+            if (std::find(keys.begin(), keys.end(), key) == keys.end())
+                return false;
 
         if (rule.contains("type_name")
             && (!input.contains("type") || input["type"] != rule["type_name"]))
