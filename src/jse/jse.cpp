@@ -200,7 +200,7 @@ namespace jse
             for (int i = 0; i < verified_matching_rules.size(); i++)
                 s << i << ": " << verified_matching_rules[i].dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
-            return !strict; // if not strict, we do not check for extra keys to distinguish between rules
+            return false; // if not strict, we do not check for extra keys to distinguish between rules
         }
         const json &single_matched_rule = verified_matching_rules.front();
 
