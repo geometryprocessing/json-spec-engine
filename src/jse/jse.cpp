@@ -200,7 +200,7 @@ namespace jse
             for (int i = 0; i < verified_matching_rules.size(); i++)
                 s << i << ": " << verified_matching_rules[i].dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
-            return false;
+            return !strict; // if not strict, we do not check for extra keys to distinguish between rules
         }
         const json &single_matched_rule = verified_matching_rules.front();
 
@@ -427,18 +427,20 @@ namespace jse
                 if (!input.contains(string(e)))
                     return false;
 
-        std::vector<std::string> keys;
-        keys.reserve((rule.contains("required") ? rule["required"].size() : 0)
-                     + (rule.contains("optional") ? rule["optional"].size() : 0));
-        if (rule.contains("required"))
-            keys.insert(keys.end(), rule["required"].begin(), rule["required"].end());
-        if (rule.contains("optional"))
-            keys.insert(keys.end(), rule["optional"].begin(), rule["optional"].end());
+        if (strict) // strict mode: check that no extra fields are present
+        {
+            std::vector<std::string> keys;
+            keys.reserve((rule.contains("required") ? rule["required"].size() : 0)
+                         + (rule.contains("optional") ? rule["optional"].size() : 0));
+            if (rule.contains("required"))
+                keys.insert(keys.end(), rule["required"].begin(), rule["required"].end());
+            if (rule.contains("optional"))
+                keys.insert(keys.end(), rule["optional"].begin(), rule["optional"].end());
 
-        // Check that no extra fields are present
-        for (const auto &[key, value] : input.items())
-            if (std::find(keys.begin(), keys.end(), key) == keys.end())
-                return false;
+            for (const auto &[key, value] : input.items())
+                if (std::find(keys.begin(), keys.end(), key) == keys.end())
+                    return false;
+        }
 
         if (rule.contains("type_name")
             && (!input.contains("type") || input["type"] != rule["type_name"]))
