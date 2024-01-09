@@ -95,7 +95,7 @@ For a json to be file to be valid, every entry in the json must match *one and o
 
 The specification supports polymorphic types: it is possible to specify multiple rules for the same pointer. In this case the file is valid as long as any of the rules is valid.
 
-### type: object
+### "type": "object"
 
 The entry must be an object. The object can contain a set of required fields (required), and a set of optional fields. Note that every optional field must provide a default value in the spec. Additionally, it is possible to specify a type-name, in that case the object must contain a field called type with the matching name.
 
@@ -140,7 +140,7 @@ Optional parameters:
 
 ### "type": "list"
 
-The entry must be a list. Optionally, it is possible to restrict the lenght of the list.
+The entry must be a list. Optionally, it is possible to restrict the length of the list.
 
 Optional parameters: 
 * min: minimal size
