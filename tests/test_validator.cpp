@@ -250,7 +250,6 @@ TEST_CASE("include_rule", "[validator]")
     REQUIRE(new_rules == matching);
 }
 
-
 TEST_CASE("file_01", "[validator]")
 {
     std::ifstream ifs1(root_path + "/input_01.json");
@@ -610,4 +609,50 @@ TEST_CASE("polymorphism", "[inject]")
 
     INFO(return_json);
     REQUIRE(return_json == output);
+}
+
+TEST_CASE("null_as_nan", "[validator][inject]")
+{
+    nlohmann::json rules = R"(
+        [
+            {
+                "pointer": "/",
+                "type": "object",
+                "required": ["f1"],
+                "optional": ["f2"]
+            },
+            {
+                "pointer": "/f1",
+                "type": "float"
+            },
+            {
+                "pointer": "/f2",
+                "type": "int",
+                "default": null
+            }
+        ]
+        )"_json;
+
+    nlohmann::json input = R"(
+        {
+            "f1": null,
+            "f2": null
+        }
+        )"_json;
+
+    JSE jse;
+    jse.strict = true;
+
+    bool r = jse.verify_json(input, rules);
+    REQUIRE(r);
+
+    input.erase("f2");
+    r = jse.verify_json(input, rules);
+    REQUIRE(r);
+
+    const json return_json = jse.inject_defaults(input, rules);
+    CHECK(return_json["f1"].is_null());
+    CHECK(return_json["f2"].is_null());
+
+    input["f2"] = std::nan("");
 }
