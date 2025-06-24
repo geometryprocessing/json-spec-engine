@@ -36,6 +36,9 @@ namespace jse
         // additional directories which can be used for relative paths
         std::vector<string> include_directories;
 
+        // additional rules that can be used
+        std::unordered_map<std::string, json> embedded_rules;
+
         // automatic boxing for primitive types
         // if all rules fail for a basic type, try boxing it once and try again
         bool boxing_primitive = true;

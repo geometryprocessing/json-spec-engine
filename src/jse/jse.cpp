@@ -100,13 +100,31 @@ namespace jse
                     enriched.push_back(rule);
                 }
                 // if the rule is an include, expand the node with a copy of the included file
+                // include an embedded rule
+                else if (embedded_rules.find(rule.at("spec_file")) != embedded_rules.end())
+                {
+                    json embed_include_rules = embedded_rules[rule.at("spec_file")];
+                    // loop over all rules to add the prefix
+                    for (auto &i_rule : embed_include_rules)
+                    {
+                        string prefix = rule.at("pointer");
+                        string pointer = i_rule.at("pointer");
+                        string new_pointer = prepend_pointer(pointer, prefix);
+                        i_rule.at("pointer") = new_pointer;
+                    }
+
+                    // save modified rules
+                    for (const auto &i_rule : embed_include_rules)
+                        enriched.push_back(i_rule);
+                }
+                // include an rule from a file
                 else
                 {
                     bool replaced = false;
                     // the include file could be in any of the include directories
+                    string spec_file = rule.at("spec_file");
                     for (const auto &dir : dirs)
                     {
-                        string spec_file = rule.at("spec_file");
                         string f = dir + "/" + spec_file;
                         // check if the file exists
                         if (std::filesystem::is_regular_file(f))
@@ -367,7 +385,7 @@ namespace jse
     {
         assert(rule.at("type") == "float");
 
-        if (!input.is_number() && !input.is_null())
+        if (!input.is_number())
             return false;
 
         if (rule.contains("min") && input < rule["min"])
@@ -383,7 +401,7 @@ namespace jse
     {
         assert(rule.at("type") == "int");
 
-        if (!input.is_number_integer() && !input.is_null())
+        if (!input.is_number_integer())
             return false;
 
         if (rule.contains("min") && input < rule["min"])
