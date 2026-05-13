@@ -149,9 +149,6 @@ jobs:
         with:
           fetch-depth: 10
 
-      - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
-
 
       - name: Cache build
         id: cache-build
