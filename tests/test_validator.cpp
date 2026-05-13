@@ -1,5 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 #include <jse/jse.h>
+#include <rules_04.hpp>
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <fstream>
@@ -248,6 +249,14 @@ TEST_CASE("include_rule", "[validator]")
 
     INFO(jse.log2str());
     REQUIRE(new_rules == matching);
+}
+
+TEST_CASE("embedded_include_rule", "[validator]")
+{
+    std::ifstream ifs(root_path + "/rules_03.json");
+    json matching = json::parse(ifs);
+
+    REQUIRE(jse::embed::spec() == matching);
 }
 
 TEST_CASE("file_01", "[validator]")
