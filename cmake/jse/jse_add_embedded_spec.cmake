@@ -4,9 +4,9 @@
 #     INCLUDE_DIRS include_dir_1 include_dir_2
 # )
 #
-# Creates the fixed jse::embed library target containing generated .hpp/.cpp
-# files. The generated jse::embed::spec() function returns a lazily parsed,
-# include-expanded nlohmann::json spec.
+# Adds generated .hpp/.cpp files to the fixed jse::embed library target. Each
+# generated header exposes jse::embed::<output_stem>::spec(), where output_stem
+# is the OUTPUT filename stem converted to a valid C++ identifier.
 function(jse_add_embedded_spec)
     set(options)
     set(one_value_args INPUT OUTPUT)
@@ -18,12 +18,10 @@ function(jse_add_embedded_spec)
         ${ARGN}
     )
 
+    MESSAGE(STATUS "Configuring embedded spec with input ${JSE_EMBED_INPUT} and output ${JSE_EMBED_OUTPUT} using include dirs ${JSE_EMBED_INCLUDE_DIRS}")
+
     if(JSE_EMBED_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unknown arguments for jse_add_embedded_spec: ${JSE_EMBED_UNPARSED_ARGUMENTS}")
-    endif()
-
-    if(TARGET jse_embed)
-        message(FATAL_ERROR "jse_add_embedded_spec creates fixed target jse::embed and can only be called once")
     endif()
 
     if(NOT JSE_EMBED_INPUT)
@@ -43,6 +41,13 @@ function(jse_add_embedded_spec)
     get_filename_component(_jse_embed_output_dir "${_jse_embed_header}" DIRECTORY)
     get_filename_component(_jse_embed_output_stem "${_jse_embed_header}" NAME_WE)
     set(_jse_embed_source "${_jse_embed_output_dir}/${_jse_embed_output_stem}.cpp")
+    string(MAKE_C_IDENTIFIER "${_jse_embed_output_stem}" _jse_embed_spec_namespace)
+
+    get_property(_jse_embed_namespaces GLOBAL PROPERTY JSE_EMBED_SPEC_NAMESPACES)
+    if(_jse_embed_spec_namespace IN_LIST _jse_embed_namespaces)
+        message(FATAL_ERROR "jse_add_embedded_spec already has an embedded spec named ${_jse_embed_spec_namespace}")
+    endif()
+    set_property(GLOBAL APPEND PROPERTY JSE_EMBED_SPEC_NAMESPACES "${_jse_embed_spec_namespace}")
 
     get_filename_component(_jse_embed_input_dir "${_jse_embed_input}" DIRECTORY)
     set(_jse_embed_include_dirs "${_jse_embed_input_dir}" ${JSE_EMBED_INCLUDE_DIRS})
@@ -78,7 +83,7 @@ function(jse_add_embedded_spec)
             --input "${_jse_embed_input}"
             --output-header "${_jse_embed_header}"
             --output-source "${_jse_embed_source}"
-            --namespace "jse::embed"
+            --namespace "jse::embed::${_jse_embed_spec_namespace}"
             --function "spec"
             ${_jse_embed_include_args}
         DEPENDS
@@ -95,17 +100,20 @@ function(jse_add_embedded_spec)
         PROPERTIES GENERATED TRUE
     )
 
-    add_library(jse_embed
+    if(NOT TARGET jse_embed)
+        add_library(jse_embed)
+        add_library(jse::embed ALIAS jse_embed)
+        target_link_libraries(jse_embed PUBLIC nlohmann_json::nlohmann_json)
+        target_compile_features(jse_embed PUBLIC cxx_std_17)
+    endif()
+
+    target_sources(jse_embed PRIVATE
         "${_jse_embed_source}"
         "${_jse_embed_header}"
     )
-    add_library(jse::embed ALIAS jse_embed)
-
     target_include_directories(jse_embed PUBLIC
         "$<BUILD_INTERFACE:${_jse_embed_output_dir}>"
     )
-    target_link_libraries(jse_embed PUBLIC nlohmann_json::nlohmann_json)
-    target_compile_features(jse_embed PUBLIC cxx_std_17)
     source_group("Generated" FILES "${_jse_embed_source}" "${_jse_embed_header}")
 
     set(JSE_EMBED_HEADER "${_jse_embed_header}" PARENT_SCOPE)
