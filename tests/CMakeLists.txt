@@ -13,6 +13,11 @@ jse_add_embedded_spec(
 	OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/embedded_specs/rules_04.hpp"
 )
 
+jse_add_embedded_spec(
+	INPUT "${CMAKE_SOURCE_DIR}/data/rules_01.json"
+	OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/embedded_specs/rules_01.hpp"
+)
+
 ################################################################################
 # Required Libraries
 ################################################################################

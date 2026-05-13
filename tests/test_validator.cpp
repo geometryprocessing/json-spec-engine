@@ -1,5 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 #include <jse/jse.h>
+#include <rules_01.hpp>
 #include <rules_04.hpp>
 #include <catch2/catch.hpp>
 #include <iostream>
@@ -256,7 +257,57 @@ TEST_CASE("embedded_include_rule", "[validator]")
     std::ifstream ifs(root_path + "/rules_03.json");
     json matching = json::parse(ifs);
 
-    REQUIRE(jse::embed::spec() == matching);
+    REQUIRE(jse::embed::rules_04::spec() == matching);
+}
+
+TEST_CASE("embedded_multiple_specs", "[validator]")
+{
+    std::ifstream ifs(root_path + "/rules_01.json");
+    json matching = json::parse(ifs);
+
+    REQUIRE(jse::embed::rules_01::spec() == matching);
+}
+
+TEST_CASE("null_number_rules_are_opt_in", "[validator]")
+{
+    nlohmann::json rules = R"(
+        [
+            {
+                "pointer": "/",
+                "type": "object",
+                "optional": ["field"]
+            },
+            {
+                "pointer": "/field",
+                "type": "int"
+            },
+            {
+                "pointer": "/field",
+                "type": "object",
+                "optional": ["offset"],
+                "default": null
+            },
+            {
+                "pointer": "/field/offset",
+                "type": "int",
+                "default": 0
+            }
+        ]
+        )"_json;
+
+    nlohmann::json input = R"(
+        {
+            "field": null
+        }
+        )"_json;
+
+    JSE jse;
+    jse.strict = true;
+
+    REQUIRE(jse.verify_json(input, rules));
+
+    jse.allow_null_numbers = true;
+    REQUIRE(!jse.verify_json(input, rules));
 }
 
 TEST_CASE("file_01", "[validator]")
@@ -651,6 +702,7 @@ TEST_CASE("null_as_nan", "[validator][inject]")
 
     JSE jse;
     jse.strict = true;
+    jse.allow_null_numbers = true;
 
     bool r = jse.verify_json(input, rules);
     REQUIRE(r);
