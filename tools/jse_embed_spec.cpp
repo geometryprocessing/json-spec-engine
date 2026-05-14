@@ -148,10 +148,21 @@ namespace
         {
             const std::string delimiter = i == 0 ? "JSE_JSON" : "JSE_JSON_" + std::to_string(i);
             if (value.find(")" + delimiter + "\"") == std::string::npos)
-                return "R\"" + delimiter + "(\n" + value + "\n)" + delimiter + "\"";
+                return "R\"" + delimiter + "(" + value + ")" + delimiter + "\"";
         }
 
         throw std::runtime_error("Failed to find a valid raw string delimiter.");
+    }
+
+    std::vector<std::string> split_string(const std::string &value, const std::size_t chunk_size)
+    {
+        std::vector<std::string> chunks;
+        chunks.reserve((value.size() + chunk_size - 1) / chunk_size);
+
+        for (std::size_t start = 0; start < value.size(); start += chunk_size)
+            chunks.push_back(value.substr(start, chunk_size));
+
+        return chunks;
     }
 
     void ensure_parent_directory(const std::filesystem::path &path)
@@ -206,17 +217,26 @@ namespace
 
     std::string source_content(const Options &options, const jse::json &rules)
     {
+        constexpr std::size_t max_string_literal_chunk_size = 8000;
+
         const auto namespaces = split_namespace(options.namespace_name);
         const auto header_name = options.output_header.filename().string();
-        const std::string rules_text = rules.dump(4, ' ', true);
+        const std::string rules_text = "\n" + rules.dump(4, ' ', true) + "\n";
+        const auto rules_text_chunks = split_string(rules_text, max_string_literal_chunk_size);
 
         std::ostringstream os;
         os << "#include \"" << header_name << "\"\n\n";
+        os << "#include <string>\n\n";
         open_namespaces(os, namespaces);
         os << "const nlohmann::json &" << options.function_name << "()\n";
         os << "{\n";
-        os << "    static const nlohmann::json value = nlohmann::json::parse("
-           << raw_string_literal(rules_text) << ");\n";
+        os << "    static const nlohmann::json value = []() {\n";
+        os << "        std::string text;\n";
+        os << "        text.reserve(" << rules_text.size() << ");\n";
+        for (const auto &chunk : rules_text_chunks)
+            os << "        text += " << raw_string_literal(chunk) << ";\n";
+        os << "        return nlohmann::json::parse(text);\n";
+        os << "    }();\n";
         os << "    return value;\n";
         os << "}\n";
         if (!namespaces.empty())
