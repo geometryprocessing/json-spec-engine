@@ -1,6 +1,7 @@
 #include <jse/jse.h>
 
 #include <cctype>
+#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -142,16 +143,13 @@ namespace
         return engine.inject_include(rules);
     }
 
-    std::string raw_string_literal(const std::string &value)
+    std::string byte_literal(const unsigned char value)
     {
-        for (int i = 0; i < 10000; ++i)
-        {
-            const std::string delimiter = i == 0 ? "JSE_JSON" : "JSE_JSON_" + std::to_string(i);
-            if (value.find(")" + delimiter + "\"") == std::string::npos)
-                return "R\"" + delimiter + "(" + value + ")" + delimiter + "\"";
-        }
-
-        throw std::runtime_error("Failed to find a valid raw string delimiter.");
+        constexpr char hex[] = "0123456789ABCDEF";
+        std::string result = "0x";
+        result += hex[value >> 4];
+        result += hex[value & 0x0F];
+        return result;
     }
 
     std::vector<std::string> split_string(const std::string &value, const std::size_t chunk_size)
@@ -163,6 +161,28 @@ namespace
             chunks.push_back(value.substr(start, chunk_size));
 
         return chunks;
+    }
+
+    void write_byte_array_chunk(std::ostream &os, const std::string &chunk, const std::size_t index)
+    {
+        const std::string name = "chunk_" + std::to_string(index);
+
+        os << "        static constexpr unsigned char " << name << "[] = {\n";
+        for (std::size_t i = 0; i < chunk.size(); ++i)
+        {
+            if (i % 16 == 0)
+                os << "            ";
+
+            os << byte_literal(static_cast<unsigned char>(chunk[i]));
+
+            if (i + 1 != chunk.size())
+                os << ", ";
+
+            if (i % 16 == 15 || i + 1 == chunk.size())
+                os << "\n";
+        }
+        os << "        };\n";
+        os << "        text.append(reinterpret_cast<const char *>(" << name << "), sizeof(" << name << "));\n";
     }
 
     void ensure_parent_directory(const std::filesystem::path &path)
@@ -217,12 +237,12 @@ namespace
 
     std::string source_content(const Options &options, const jse::json &rules)
     {
-        constexpr std::size_t max_string_literal_chunk_size = 8000;
+        constexpr std::size_t max_byte_array_chunk_size = 4096;
 
         const auto namespaces = split_namespace(options.namespace_name);
         const auto header_name = options.output_header.filename().string();
         const std::string rules_text = "\n" + rules.dump(4, ' ', true) + "\n";
-        const auto rules_text_chunks = split_string(rules_text, max_string_literal_chunk_size);
+        const auto rules_text_chunks = split_string(rules_text, max_byte_array_chunk_size);
 
         std::ostringstream os;
         os << "#include \"" << header_name << "\"\n\n";
@@ -233,8 +253,8 @@ namespace
         os << "    static const nlohmann::json value = []() {\n";
         os << "        std::string text;\n";
         os << "        text.reserve(" << rules_text.size() << ");\n";
-        for (const auto &chunk : rules_text_chunks)
-            os << "        text += " << raw_string_literal(chunk) << ";\n";
+        for (std::size_t i = 0; i < rules_text_chunks.size(); ++i)
+            write_byte_array_chunk(os, rules_text_chunks[i], i);
         os << "        return nlohmann::json::parse(text);\n";
         os << "    }();\n";
         os << "    return value;\n";
