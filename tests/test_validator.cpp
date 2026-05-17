@@ -257,7 +257,7 @@ TEST_CASE("embedded_include_rule", "[validator]")
     std::ifstream ifs(root_path + "/rules_03.json");
     json matching = json::parse(ifs);
 
-    REQUIRE(jse::embed::rules_04::spec() == matching);
+    REQUIRE(jse::embed::test_embedded_specs::rules_04::spec() == matching);
 }
 
 TEST_CASE("embedded_multiple_specs", "[validator]")
@@ -265,7 +265,7 @@ TEST_CASE("embedded_multiple_specs", "[validator]")
     std::ifstream ifs(root_path + "/rules_01.json");
     json matching = json::parse(ifs);
 
-    REQUIRE(jse::embed::rules_01::spec() == matching);
+    REQUIRE(jse::embed::test_embedded_specs::rules_01::spec() == matching);
 }
 
 TEST_CASE("null_number_rules_are_opt_in", "[validator]")

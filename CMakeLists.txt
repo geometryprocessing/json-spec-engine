@@ -59,7 +59,7 @@ include(jse_use_colors)
 # IPC Toolkit utils
 include(jse_prepend_current_path)
 include(jse_set_source_group)
-include(jse_add_embedded_spec)
+include(jse_add_spec)
 
 # Sort projects inside the solution
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
