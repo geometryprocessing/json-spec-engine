@@ -59,6 +59,7 @@ include(jse_use_colors)
 # IPC Toolkit utils
 include(jse_prepend_current_path)
 include(jse_set_source_group)
+include(jse_add_spec)
 
 # Sort projects inside the solution
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -104,6 +105,11 @@ target_link_libraries(jse PUBLIC nlohmann_json::nlohmann_json)
 
 # Use C++17
 target_compile_features(jse PUBLIC cxx_std_17)
+
+add_executable(jse_embed_spec_tool EXCLUDE_FROM_ALL tools/jse_embed_spec.cpp)
+target_link_libraries(jse_embed_spec_tool PRIVATE jse::jse)
+target_compile_features(jse_embed_spec_tool PRIVATE cxx_std_17)
+set_target_properties(jse_embed_spec_tool PROPERTIES FOLDER "JSE")
 
 ################################################################################
 # Tests

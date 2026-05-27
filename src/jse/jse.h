@@ -40,6 +40,9 @@ namespace jse
         // if all rules fail for a basic type, try boxing it once and try again
         bool boxing_primitive = true;
 
+        // allow null values to satisfy int and float rules
+        bool allow_null_numbers = false;
+
         // message list
         typedef std::pair<std::string, std::string> log_item;
         std::vector<log_item> log;

@@ -367,7 +367,7 @@ namespace jse
     {
         assert(rule.at("type") == "float");
 
-        if (!input.is_number() && !input.is_null())
+        if (!input.is_number() && !(allow_null_numbers && input.is_null()))
             return false;
 
         if (rule.contains("min") && input < rule["min"])
@@ -383,7 +383,7 @@ namespace jse
     {
         assert(rule.at("type") == "int");
 
-        if (!input.is_number_integer() && !input.is_null())
+        if (!input.is_number_integer() && !(allow_null_numbers && input.is_null()))
             return false;
 
         if (rule.contains("min") && input < rule["min"])
