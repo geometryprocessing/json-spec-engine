@@ -77,6 +77,10 @@ namespace jse
         // Find the first rule matching a pointer
         json find_valid_rule(const string &pointer, const json &input, const json &rules);
 
+        // Returns the keys of input that are not listed in rule's "required" or "optional" lists.
+        // Only meaningful for rules of type "object".
+        std::vector<std::string> find_extra_keys(const json &input, const json &rule);
+
         // Utils
         bool contained_in_list(string item, const json &list);
 

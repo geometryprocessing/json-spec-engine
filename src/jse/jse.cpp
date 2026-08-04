@@ -184,6 +184,25 @@ namespace jse
                         return true;
             }
 
+            // If there is only one candidate rule (no ambiguity) and it is an object rule
+            // that failed only because of extra/unknown fields, pinpoint those fields
+            // instead of dumping the whole subtree.
+            if (strict && matching_rules.size() == 1 && matching_rules[0].value("type", "") == "object")
+            {
+                std::vector<std::string> extra_keys = find_extra_keys(input, matching_rules[0]);
+                if (!extra_keys.empty())
+                {
+                    for (const std::string &key : extra_keys)
+                    {
+                        const string extra_pointer = append_pointer(pointer, key);
+                        std::stringstream s;
+                        s << "No rule matched for \"" << extra_pointer << "\": " << input[key].dump(/*indent=*/4);
+                        log.push_back(log_item("error", s.str()));
+                    }
+                    return false;
+                }
+            }
+
             std::stringstream s;
             s << "No rule matched for \"" << pointer << "\": " << input.dump(/*indent=*/4) << std::endl;
             s << "No valid rules in this list:\n";
@@ -414,6 +433,24 @@ namespace jse
 
         return true;
     }
+    std::vector<std::string> JSE::find_extra_keys(const json &input, const json &rule)
+    {
+        std::vector<std::string> keys;
+        keys.reserve((rule.contains("required") ? rule["required"].size() : 0)
+                     + (rule.contains("optional") ? rule["optional"].size() : 0));
+        if (rule.contains("required"))
+            keys.insert(keys.end(), rule["required"].begin(), rule["required"].end());
+        if (rule.contains("optional"))
+            keys.insert(keys.end(), rule["optional"].begin(), rule["optional"].end());
+
+        std::vector<std::string> extra;
+        if (input.is_object())
+            for (const auto &[key, value] : input.items())
+                if (std::find(keys.begin(), keys.end(), key) == keys.end())
+                    extra.push_back(key);
+        return extra;
+    }
+
     bool JSE::verify_rule_object(const json &input, const json &rule)
     {
         assert(rule.at("type") == "object");
@@ -429,17 +466,8 @@ namespace jse
 
         if (strict) // strict mode: check that no extra fields are present
         {
-            std::vector<std::string> keys;
-            keys.reserve((rule.contains("required") ? rule["required"].size() : 0)
-                         + (rule.contains("optional") ? rule["optional"].size() : 0));
-            if (rule.contains("required"))
-                keys.insert(keys.end(), rule["required"].begin(), rule["required"].end());
-            if (rule.contains("optional"))
-                keys.insert(keys.end(), rule["optional"].begin(), rule["optional"].end());
-
-            for (const auto &[key, value] : input.items())
-                if (std::find(keys.begin(), keys.end(), key) == keys.end())
-                    return false;
+            if (!find_extra_keys(input, rule).empty())
+                return false;
         }
 
         if (rule.contains("type_name")

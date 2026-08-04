@@ -221,6 +221,66 @@ TEST_CASE("type_object", "[validator]")
     REQUIRE(!jse.verify_json(input, rules));
 }
 
+TEST_CASE("strict_unknown_parameter", "[validator]")
+{
+    json input = R"(
+        {
+            "string1": "teststring"
+        }
+        )"_json;
+
+    json rules = R"(
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["string1"]
+        }
+        ]
+        )"_json;
+
+    JSE jse;
+
+    jse.strict = true;
+    REQUIRE(!jse.verify_json(input, rules));
+    REQUIRE(jse.log2str().find("Unknown entry /string1") != std::string::npos);
+
+    jse.strict = false;
+    REQUIRE(jse.verify_json(input, rules));
+}
+
+TEST_CASE("strict_unlisted_extra_parameter", "[validator]")
+{
+    // "skip_simplif" is a typo for "skip_simplify" and is not listed in
+    // required/optional, so it should be pinpointed rather than triggering
+    // a dump of the whole object.
+    json input = R"(
+        {
+            "string1": "teststring",
+            "foo2": false
+        }
+        )"_json;
+
+    json rules = R"(
+        [
+        {
+            "pointer": "/",
+            "type": "object",
+            "required": ["string1"],
+            "optional": ["foo1"]
+        }
+        ]
+        )"_json;
+
+    JSE jse;
+
+    jse.strict = true;
+    REQUIRE(!jse.verify_json(input, rules));
+    std::cout << jse.log2str() << std::endl;
+    REQUIRE(jse.log2str().find("No rule matched for \"/foo2\": false") != std::string::npos);
+    REQUIRE(jse.log2str().find("No valid rules in this list") == std::string::npos);
+}
+
 TEST_CASE("include_rule", "[validator]")
 {
     json rules = R"(
