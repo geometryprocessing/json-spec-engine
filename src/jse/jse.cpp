@@ -196,7 +196,10 @@ namespace jse
                     {
                         const string extra_pointer = append_pointer(pointer, key);
                         std::stringstream s;
-                        s << "No rule matched for \"" << extra_pointer << "\": " << input[key].dump(/*indent=*/4);
+                        s << "No rule matched for \"" << extra_pointer << "\": " << input[key].dump(/*indent=*/4) << std::endl;
+                        s << "No valid rules in this list:\n";
+                        for (int i = 0; i < matching_rules.size(); i++)
+                            s << i << ": " << matching_rules[i].dump(/*indent=*/4) << "\n";
                         log.push_back(log_item("error", s.str()));
                     }
                     return false;

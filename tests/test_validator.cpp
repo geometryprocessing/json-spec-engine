@@ -276,9 +276,8 @@ TEST_CASE("strict_unlisted_extra_parameter", "[validator]")
 
     jse.strict = true;
     REQUIRE(!jse.verify_json(input, rules));
-    std::cout << jse.log2str() << std::endl;
     REQUIRE(jse.log2str().find("No rule matched for \"/foo2\": false") != std::string::npos);
-    REQUIRE(jse.log2str().find("No valid rules in this list") == std::string::npos);
+    REQUIRE(jse.log2str().find("No valid rules in this list") != std::string::npos);
 }
 
 TEST_CASE("include_rule", "[validator]")
