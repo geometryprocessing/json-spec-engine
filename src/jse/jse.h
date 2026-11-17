@@ -48,8 +48,11 @@ namespace jse
         std::vector<log_item> log;
 
     private:
+        // The rules of each pointer, built once per verify_json/inject_defaults call
+        struct RuleIndex;
+
         // Verify a node pointed by
-        bool verify_json(const string &pointer, json &input, const json &rules);
+        bool verify_json(const string &pointer, json &input, const json &rules, const RuleIndex &index);
 
         // Dispatcher for rule verification
         bool verify_rule(const json &input, const json &rule);
@@ -82,7 +85,7 @@ namespace jse
         std::vector<std::string> find_extra_keys(const json &input, const json &rule);
 
         // Utils
-        bool contained_in_list(string item, const json &list);
+        bool contained_in_list(const string &item, const json &list);
 
         // Checks if a given json pointer is a subset of a pointer string (containing wildcards).
         // If it is, the second return parameter is an instantiated pointer

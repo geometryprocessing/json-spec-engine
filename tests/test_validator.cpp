@@ -776,3 +776,98 @@ TEST_CASE("null_as_nan", "[validator][inject]")
 
     input["f2"] = std::nan("");
 }
+
+TEST_CASE("rules_are_matched_in_spec_order", "[validator]")
+{
+    // Rules of one pointer, interleaved with others: an ambiguous node lists them in the order of
+    // the spec.
+    json rules = R"(
+        [
+            {"pointer": "/", "type": "object", "optional": ["a"]},
+            {"pointer": "/a", "type": "int", "doc": "first", "default": 1},
+            {"pointer": "/b", "type": "int"},
+            {"pointer": "/a", "type": "float", "doc": "second"}
+        ]
+        )"_json;
+
+    JSE jse;
+    REQUIRE(!jse.verify_json(R"({"a": 2})"_json, rules));
+    const std::string log = jse.log2str();
+    INFO(log);
+    REQUIRE(log.find("Multiple rules matched for \"/a\"") != std::string::npos);
+    REQUIRE(log.find("\"first\"") != std::string::npos);
+    REQUIRE(log.find("\"first\"") < log.find("\"second\""));
+
+    REQUIRE(!jse.verify_json(R"({"a": "text"})"_json, rules));
+    REQUIRE(jse.log2str().find("No rule matched for \"/a\"") != std::string::npos);
+    REQUIRE(jse.log2str().find("\"first\"") < jse.log2str().find("\"second\""));
+
+    // A float alone matches the second rule only.
+    REQUIRE(jse.verify_json(R"({"a": 2.5})"_json, rules));
+}
+
+TEST_CASE("skip_and_other_defaults", "[inject]")
+{
+    json rules = R"(
+        [
+            {"pointer": "/", "type": "object", "optional": ["skipped", "number", "word", "object", "list"]},
+            {"pointer": "/skipped", "type": "int", "default": "skip"},
+            {"pointer": "/number", "type": "int", "default": 3},
+            {"pointer": "/word", "type": "string", "default": "skipping"},
+            {"pointer": "/object", "type": "object", "optional": ["inner"], "default": {}},
+            {"pointer": "/object/inner", "type": "string", "default": "skip"},
+            {"pointer": "/list", "type": "list", "default": ["skip"]},
+            {"pointer": "/list/*", "type": "string"}
+        ]
+        )"_json;
+
+    JSE jse;
+    jse.strict = true;
+    REQUIRE(jse.verify_json(json::object(), rules));
+    const json out = jse.inject_defaults(json::object(), rules);
+    INFO(out.dump());
+    CHECK(!out.contains("skipped"));
+    CHECK(out["number"] == 3);
+    CHECK(out["word"] == "skipping");
+    CHECK(out["object"].is_object());
+    CHECK(!out["object"].contains("inner"));
+    CHECK(out["list"] == json::array({"skip"}));
+}
+
+TEST_CASE("rule_pointers", "[validator]")
+{
+    // A pointer that is not a string matches no node.
+    json rules = R"(
+        [
+            {"pointer": "/", "type": "object", "optional": ["a"]},
+            {"pointer": 5, "type": "int"},
+            {"pointer": "/a", "type": "int", "default": 0}
+        ]
+        )"_json;
+    JSE jse;
+    jse.strict = true;
+    REQUIRE(jse.verify_json(R"({"a": 1})"_json, rules));
+
+    // A rule without a pointer is an error in the spec.
+    rules.push_back(R"({"type": "int"})"_json);
+    REQUIRE_THROWS_AS(jse.verify_json(R"({"a": 1})"_json, rules), nlohmann::json::exception);
+}
+
+TEST_CASE("inconsistent_defaults", "[validator]")
+{
+    json rules = R"(
+        [
+            {"pointer": "/", "type": "object", "required": ["r"], "optional": ["o"]},
+            {"pointer": "/r", "type": "int", "default": 1},
+            {"pointer": "/o", "type": "int", "default": 1},
+            {"pointer": "/o", "type": "float", "default": 2.0}
+        ]
+        )"_json;
+    JSE jse;
+    REQUIRE(!jse.verify_json(R"({"r": 1})"_json, rules));
+    CHECK(jse.log2str().find("/r is a mandatory field with a default value") != std::string::npos);
+
+    rules[1].erase("default");
+    REQUIRE(!jse.verify_json(R"({"r": 1})"_json, rules));
+    CHECK(jse.log2str().find("/o is an optional field with 2 default values") != std::string::npos);
+}
