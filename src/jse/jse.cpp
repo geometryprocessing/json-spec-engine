@@ -5,6 +5,8 @@
 #include <sstream>
 #include <algorithm>
 #include <fstream>
+#include <unordered_map>
+#include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace jse
@@ -12,18 +14,63 @@ namespace jse
 
     //////////// PUBLIC
 
+    // The rules of each pointer, and those of them that have a default, in the order of `rules`.
+    // It holds pointers into `rules`, which must outlive it and stay unchanged. Looking a pointer up
+    // here is what collect_pointer/collect_default_rules did by scanning (and copying) every rule
+    // for every node of the input.
+    struct JSE::RuleIndex
+    {
+        std::unordered_map<string, std::vector<const json *>> rules;
+        std::unordered_map<string, std::vector<const json *>> defaults;
+
+        explicit RuleIndex(const json &all_rules)
+        {
+            for (const auto &rule : all_rules)
+            {
+                // at() throws for a rule without a pointer, as the scans did
+                const string *pointer = rule.at("pointer").get_ptr<const string *>();
+                if (pointer == nullptr)
+                    continue; // a pointer that is not a string matches no node
+                rules[*pointer].push_back(&rule);
+                if (rule.contains("default"))
+                    defaults[*pointer].push_back(&rule);
+            }
+        }
+
+        const std::vector<const json *> &rules_at(const string &pointer) const
+        {
+            return find(rules, pointer);
+        }
+
+        const std::vector<const json *> &defaults_at(const string &pointer) const
+        {
+            return find(defaults, pointer);
+        }
+
+    private:
+        static const std::vector<const json *> &find(
+            const std::unordered_map<string, std::vector<const json *>> &map, const string &pointer)
+        {
+            static const std::vector<const json *> none;
+            const auto it = map.find(pointer);
+            return it == map.end() ? none : it->second;
+        }
+    };
+
     bool JSE::verify_json(const json &input, const json &rules)
     {
         log.clear();
+        const RuleIndex index(rules);
         json input_copy = input;
-        return verify_json("/", input_copy, rules);
+        return verify_json("/", input_copy, rules, index);
     };
 
     json JSE::inject_defaults(const json &input, const json &rules)
     {
         log.clear();
+        const RuleIndex index(rules);
         json input_copy = input;
-        bool b = verify_json("/", input_copy, rules);
+        bool b = verify_json("/", input_copy, rules, index);
         assert(b); // Make sure the original file is valid
 
         // Check that the new file, after adding defaults, is also valid
@@ -36,7 +83,7 @@ namespace jse
     {
         std::stringstream s;
 
-        for (log_item i : log)
+        for (const log_item &i : log)
         {
             s << i.first << ": " << i.second << std::endl;
         }
@@ -149,11 +196,10 @@ namespace jse
         throw std::runtime_error("Reached maximal 10 levels of include recursion.");
     }
 
-    bool JSE::verify_json(const string &pointer, json &input, const json &rules)
+    bool JSE::verify_json(const string &pointer, json &input, const json &rules, const RuleIndex &index)
     {
         // Find all rules that apply for the input node
-        // TODO: accelerate this
-        std::vector<json> matching_rules = collect_pointer(pointer, rules);
+        const std::vector<const json *> &matching_rules = index.rules_at(pointer);
 
         // There must be at least one, otherwise warning and return true if not strict
         if (matching_rules.empty())
@@ -163,10 +209,10 @@ namespace jse
         }
 
         // Test all rules, one and only one must pass, otherwise throw exception
-        std::vector<json> verified_matching_rules;
-        for (auto r : matching_rules)
+        std::vector<const json *> verified_matching_rules;
+        for (const json *r : matching_rules)
         {
-            if (verify_rule(input, r))
+            if (verify_rule(input, *r))
             {
                 verified_matching_rules.push_back(r);
             }
@@ -179,17 +225,17 @@ namespace jse
             {
                 string new_pointer = append_pointer(pointer, "*");
                 // Make sure there are some rules for the boxed version before recursively checking
-                if (collect_pointer(new_pointer, rules).size() > 0)
-                    if (verify_json(new_pointer, input, rules))
+                if (index.rules_at(new_pointer).size() > 0)
+                    if (verify_json(new_pointer, input, rules, index))
                         return true;
             }
 
             // If there is only one candidate rule (no ambiguity) and it is an object rule
             // that failed only because of extra/unknown fields, pinpoint those fields
             // instead of dumping the whole subtree.
-            if (strict && matching_rules.size() == 1 && matching_rules[0].value("type", "") == "object")
+            if (strict && matching_rules.size() == 1 && matching_rules[0]->value("type", "") == "object")
             {
-                std::vector<std::string> extra_keys = find_extra_keys(input, matching_rules[0]);
+                std::vector<std::string> extra_keys = find_extra_keys(input, *matching_rules[0]);
                 if (!extra_keys.empty())
                 {
                     for (const std::string &key : extra_keys)
@@ -199,7 +245,7 @@ namespace jse
                         s << "No rule matched for \"" << extra_pointer << "\": " << input[key].dump(/*indent=*/4) << std::endl;
                         s << "No valid rules in this list:\n";
                         for (int i = 0; i < matching_rules.size(); i++)
-                            s << i << ": " << matching_rules[i].dump(/*indent=*/4) << "\n";
+                            s << i << ": " << matching_rules[i]->dump(/*indent=*/4) << "\n";
                         log.push_back(log_item("error", s.str()));
                     }
                     return false;
@@ -210,7 +256,7 @@ namespace jse
             s << "No rule matched for \"" << pointer << "\": " << input.dump(/*indent=*/4) << std::endl;
             s << "No valid rules in this list:\n";
             for (int i = 0; i < matching_rules.size(); i++)
-                s << i << ": " << matching_rules[i].dump(/*indent=*/4) << "\n";
+                s << i << ": " << matching_rules[i]->dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
             return false;
         }
@@ -220,11 +266,11 @@ namespace jse
             s << "Multiple rules matched for \"" << pointer << "\": " << input.dump(/*indent=*/4) << std::endl;
             s << "Multiple valid rules in this list, only one should be valid:";
             for (int i = 0; i < verified_matching_rules.size(); i++)
-                s << i << ": " << verified_matching_rules[i].dump(/*indent=*/4) << "\n";
+                s << i << ": " << verified_matching_rules[i]->dump(/*indent=*/4) << "\n";
             log.push_back(log_item("error", s.str()));
             return false; // if not strict, we do not check for extra keys to distinguish between rules
         }
-        const json &single_matched_rule = verified_matching_rules.front();
+        const json &single_matched_rule = *verified_matching_rules.front();
 
         // If it passes and if it is a dictionary, then test all childrens
         if (input.is_object())
@@ -233,7 +279,7 @@ namespace jse
             {
                 const string new_pointer = append_pointer(pointer, key);
                 // first of all, let's check if the specs are correct
-                const json defaults = collect_default_rules(new_pointer, rules);
+                const std::vector<const json *> &defaults = index.defaults_at(new_pointer);
 
                 // if it is mandatory, make sure there are no defaults
                 if (single_matched_rule.contains("required") && contained_in_list(key, single_matched_rule["required"]))
@@ -262,7 +308,7 @@ namespace jse
                 }
 
                 // now let's make sure it can be validated
-                if (!verify_json(new_pointer, value, rules))
+                if (!verify_json(new_pointer, value, rules, index))
                     return false;
             }
         }
@@ -278,18 +324,20 @@ namespace jse
                     continue;
 
                 string new_pointer = append_pointer(pointer, key);
-                json defaults = collect_default_rules(new_pointer, rules); // Find the default
+                const std::vector<const json *> &defaults = index.defaults_at(new_pointer); // Find the default
                 if (defaults.size() != 1)
                 {
                     log.push_back(log_item("error", "Inconsistent specifications: " + new_pointer + " is an optional field with " + std::to_string(defaults.size()) + " default values."));
                     return false;
                 }
-                if (defaults[0]["default"] != "skip")
+                const json &default_value = defaults[0]->at("default");
+                const string *default_string = default_value.get_ptr<const string *>();
+                if (default_string == nullptr || *default_string != "skip")
                 {
-                    input[key] = defaults[0]["default"];
+                    input[key] = default_value;
 
                     // Let's validate/inject the default subtree
-                    if (!verify_json(new_pointer, input[key], rules))
+                    if (!verify_json(new_pointer, input[key], rules, index))
                         return false;
                 }
             }
@@ -300,7 +348,7 @@ namespace jse
         if (input.is_array())
         {
             for (auto &i : input)
-                if (!verify_json(append_pointer(pointer, "*"), i, rules))
+                if (!verify_json(append_pointer(pointer, "*"), i, rules, index))
                     return false;
         }
 
@@ -358,7 +406,7 @@ namespace jse
         {
             std::string ext = p.extension().string();
             int count = 0;
-            for (auto e : rule["extensions"])
+            for (const auto &e : rule["extensions"])
                 if (e == ext)
                     count++;
             if (count != 1)
@@ -427,7 +475,7 @@ namespace jse
         if (rule.contains("options"))
         {
             int count = 0;
-            for (auto e : rule["options"])
+            for (const auto &e : rule["options"])
                 if (e == input)
                     count++;
             if (count != 1)
@@ -463,7 +511,7 @@ namespace jse
 
         // Check that all required fields are present
         if (rule.contains("required"))
-            for (auto e : rule["required"])
+            for (const auto &e : rule["required"])
                 if (!input.contains(string(e)))
                     return false;
 
@@ -515,7 +563,7 @@ namespace jse
         // TODO: accelerate this
 
         std::vector<json> matching_rules;
-        for (auto i : rules)
+        for (const auto &i : rules)
         {
             if (i.contains("default"))
                 matching_rules.push_back(i);
@@ -530,7 +578,7 @@ namespace jse
         // TODO: accelerate this
 
         std::vector<json> matching_rules;
-        for (auto i : rules)
+        for (const auto &i : rules)
         {
             if (i.at("pointer") == pointer && i.contains("default"))
                 matching_rules.push_back(i);
@@ -539,15 +587,20 @@ namespace jse
         return matching_rules;
     }
 
-    bool JSE::contained_in_list(string item, const json &list)
+    bool JSE::contained_in_list(const string &item, const json &list)
     {
-        return std::find(list.begin(), list.end(), item) != list.end();
+        // As `element == item`, without making a json of item for every element
+        return std::find_if(list.begin(), list.end(), [&item](const json &element) {
+                   const string *s = element.get_ptr<const string *>();
+                   return s != nullptr && *s == item;
+               })
+               != list.end();
     }
 
     std::vector<json> JSE::collect_pointer(const string &pointer, const json &rules)
     {
         std::vector<json> matching_rules;
-        for (auto i : rules)
+        for (const auto &i : rules)
         {
             if (i.at("pointer") == pointer)
                 matching_rules.push_back(i);
@@ -557,7 +610,7 @@ namespace jse
 
     json JSE::find_valid_rule(const string &pointer, const json &input, const json &rules)
     {
-        for (auto i : collect_pointer(pointer, rules))
+        for (const auto &i : collect_pointer(pointer, rules))
             if (verify_rule(input, i))
                 return i;
 
